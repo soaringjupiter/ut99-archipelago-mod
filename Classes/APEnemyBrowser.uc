@@ -1,0 +1,1 @@
+class APEnemyBrowser extends EnemyBrowser Config(APLadder);
