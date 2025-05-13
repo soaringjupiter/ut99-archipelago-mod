@@ -1,7 +1,7 @@
 //=============================================================================
 // LadderDOM
 //=============================================================================
-class APLadderDOM extends Ladder;
+class APLadderDOM extends LadderDOM;
 
 defaultproperties
 {

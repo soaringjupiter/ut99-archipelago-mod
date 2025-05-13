@@ -1,4 +1,4 @@
-class APRatedTeamInfo5 expands RatedTeamInfo;
+class APRatedTeamInfo5 expands APRatedTeamInfo;
 
 // Venom
 #exec TEXTURE IMPORT NAME=TLVenom FILE=textures\teamsymbols\TLVenom.PCX GROUP="TeamSymbols" MIPS=OFF

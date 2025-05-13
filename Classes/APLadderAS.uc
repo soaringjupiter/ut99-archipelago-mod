@@ -1,7 +1,7 @@
 //=============================================================================
 // LadderAS
 //=============================================================================
-class APLadderAS extends Ladder;
+class APLadderAS extends LadderAS;
 
 // Objective Shots
 static function int GetObjectiveCount(int Index, AssaultInfo AI)

@@ -44,7 +44,7 @@ function RestoreGame(int i)
 	Temp = Right(Saves[i], Len(Saves[i]) - 2);
 	Pos = InStr(Temp, "\\");
 	Team = int(Left(Temp, Pos));
-	LadderObj.Team = class'APLadderLadder'.Default.LadderTeams[Team];
+	LadderObj.Team = class'Ladder'.Default.LadderTeams[Team];
 
 	// DMRank
 	Temp = Right(Saves[i], Len(Temp) - Pos - 1);

@@ -1,7 +1,7 @@
 //=============================================================================
 // LadderDM
 //=============================================================================
-class APLadderDM extends Ladder;
+class APLadderDM extends LadderDM;
 
 defaultproperties
 {

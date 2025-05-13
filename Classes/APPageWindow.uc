@@ -88,10 +88,10 @@ function InitConsole()
 {
     log("Championship Mode");
     UTConsole(GetPlayerOwner().Player.Console).ManagerWindowClass="Archipelago.APManagerWindow";
-    UTConsole(GetPlayerOwner().Player.Console).UTLadderDMClass="Archipelago.APMenuLadderDM";
-    UTConsole(GetPlayerOwner().Player.Console).UTLadderCTFClass="Archipelago.APMenuLadderCTF";
-    UTConsole(GetPlayerOwner().Player.Console).UTLadderDOMClass="Archipelago.APMenuLadderMDOM";
-    UTConsole(GetPlayerOwner().Player.Console).UTLadderASClass="Archipelago.APMenuLadderLMS";
+    UTConsole(GetPlayerOwner().Player.Console).UTLadderDMClass="Archipelago.APLadderDMMenu";
+    UTConsole(GetPlayerOwner().Player.Console).UTLadderCTFClass="Archipelago.APLadderCTFMenu";
+    UTConsole(GetPlayerOwner().Player.Console).UTLadderDOMClass="Archipelago.APLadderDOMMenu";
+    UTConsole(GetPlayerOwner().Player.Console).UTLadderASClass="Archipelago.APLadderASMenu";
     UTConsole(GetPlayerOwner().Player.Console).UTLadderChalClass="Archipelago.APMenuLadderChal";
     UTConsole(GetPlayerOwner().Player.Console).InterimObjectType="Archipelago.APNewGameInterimObject";
     UTConsole(GetPlayerOwner().Player.Console).SlotWindowType="Archipelago.APSlotWindow";

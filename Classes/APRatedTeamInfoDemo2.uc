@@ -1,4 +1,4 @@
-class APRatedTeamInfoDemo2 expands RatedTeamInfo;
+class APRatedTeamInfoDemo2 expands APRatedTeamInfo;
 
 // Thunder Crash
 #exec TEXTURE IMPORT NAME=TLThunder FILE=textures\teamsymbols\TLThunder.PCX GROUP="TeamSymbols" MIPS=OFF

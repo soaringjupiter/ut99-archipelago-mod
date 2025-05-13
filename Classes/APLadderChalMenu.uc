@@ -15,14 +15,14 @@ function FillInfoArea(int i) {
 }
 
 function NextPressed() {
-	local EnemyBrowser EB;
+	local APEnemyBrowser EB;
 
 	if (PendingPos > ArrowPos) {
 		return;
 	}
 
 	HideWindow();
-	EB = EnemyBrowser(Root.CreateWindow(class'APEnemyBrowser', 100, 100, 200, 200, Root, True));
+	EB = APEnemyBrowser(Root.CreateWindow(class'APEnemyBrowser', 100, 100, 200, 200, Root, True));
 	EB.LadderWindow = Self;
 	EB.Ladder = Ladder;
 	EB.Match = SelectedMatch;

@@ -1,7 +1,7 @@
 //=============================================================================
 // LadderCTF
 //=============================================================================
-class APLadderCTF extends Ladder;
+class APLadderCTF extends LadderCTF;
 
 defaultproperties
 {

@@ -1,4 +1,4 @@
-class APRatedMatchDMDemo4 expands RatedMatchInfo;
+class APRatedMatchDMDemo4 expands APRatedMatchInfo;
 
 defaultproperties
 {

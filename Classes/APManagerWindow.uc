@@ -1,27 +1,60 @@
 class APManagerWindow extends ManagerWindow Config(APLadder);
 
-function StartLadder () {
-	UTConsole(GetPlayerOwner().Player.Console).ManagerWindowClass = "Archipelago.APManagerWindow";
-	UTConsole(GetPlayerOwner().Player.Console).UTLadderDMClass = "Archipelago.APLadderDMMenu";
-	UTConsole(GetPlayerOwner().Player.Console).UTLadderDOMClass = "Archipelago.APLadderDOMMenu";
-	UTConsole(GetPlayerOwner().Player.Console).UTLadderCTFClass = "Archipelago.APLadderCTFMenu";
-	UTConsole(GetPlayerOwner().Player.Console).UTLadderASClass = "Archipelago.APLadderASMenu";
-	UTConsole(GetPlayerOwner().Player.Console).UTLadderChalClass = "Archipelago.APLadderChalMenu";
-	UTConsole(GetPlayerOwner().Player.Console).InterimObjectType = "Archipelago.MiNewGameInterimObject";
-	UTConsole(GetPlayerOwner().Player.Console).SlotWindowType = "Archipelago.MiSlotWindow";
-	Log("Now Playing AP Ladder");
-}
+function OpenDoors ()
+{
+	local bool bOneOpened;
 
-function SwitchBack () {
-	UTConsole(GetPlayerOwner().Player.Console).ManagerWindowClass = "UTMenu.ManagerWindow";
-	UTConsole(GetPlayerOwner().Player.Console).UTLadderDMClass = "UTMenu.UTLadderDM";
-	UTConsole(GetPlayerOwner().Player.Console).UTLadderDOMClass = "UTMenu.UTLadderDOM";
-	UTConsole(GetPlayerOwner().Player.Console).UTLadderCTFClass = "UTMenu.UTLadderCTF";
-	UTConsole(GetPlayerOwner().Player.Console).UTLadderASClass = "UTMenu.UTLadderAS";
-	UTConsole(GetPlayerOwner().Player.Console).UTLadderChalClass = "UTMenu.UTLadderChal";
-	UTConsole(GetPlayerOwner().Player.Console).InterimObjectType = "UTMenu.NewGameInterimObject";
-	UTConsole(GetPlayerOwner().Player.Console).SlotWindowType = "UTMenu.SlotWindow";
-	Log("Now Playing UT Ladder");
+	if ( LadderObj.DMPosition >= 3 ) {
+		if ( (DOMDoorOpen[LadderObj.Slot] == 0) && (DOMDoor != None) ) {
+			DOMDoorOpen[LadderObj.Slot] = 1;
+			DOMDoor.Open();
+			SaveConfig();
+			bOneOpened = True;
+		}
+	}
+
+	if ( LadderObj.DOMPosition >= 2 ) {
+		if ( (CTFDoorOpen[LadderObj.Slot] == 0) && (CTFDoor != None) ) {
+			CTFDoorOpen[LadderObj.Slot] = 1;
+			CTFDoor.Open();
+			SaveConfig();
+			bOneOpened = True;
+		}
+	}
+
+	if ( LadderObj.CTFPosition >= 3 ) {
+		if ( (ASDoorOpen[LadderObj.Slot] == 0) && (ASDoor != None) ) {
+			ASDoorOpen[LadderObj.Slot] = 1;
+			ASDoor.Open();
+			SaveConfig();
+			bOneOpened = True;
+		}
+	}
+
+	if ((LadderObj.DMRank == 6) && (LadderObj.DOMRank == 6) && (LadderObj.CTFRank == 6) && (LadderObj.ASRank == 6)) {
+		if ( (ChalDoorOpen[LadderObj.Slot] == 0) && (ChalDoor != None) )
+		{
+			ChalDoorOpen[LadderObj.Slot] = 1;
+			ChalDoor.Open();
+			SaveConfig();
+			bOneOpened = True;
+		}
+	}
+
+	if ( (LadderObj.DMRank == 6) || (LadderObj.DOMRank == 6) || (LadderObj.CTFRank == 6) || (LadderObj.ASRank == 6) ) {
+		if ( (TrophyDoorOpen[LadderObj.Slot] == 0) && (TrophyDoor != None) )
+		{
+			TrophyDoorOpen[LadderObj.Slot] = 1;
+			TrophyDoor.Open();
+			SaveConfig();
+			bOneOpened = True;
+		}
+	}
+
+	if ( bOneOpened ) {
+		GetPlayerOwner().PlaySound(Sound'LadderSounds.ldoorsopen1b',SLOT_Interface);
+	}
+	bOpened = True;
 }
 
 function Created() {
@@ -96,16 +129,6 @@ function Created() {
 	DOMLadderButton.SetTextColor(TextColor);
 	DOMLadderButton.MyFont = class'UTLadderStub'.Static.GetStubClass().Static.GetHugeFont(Root);
 
-	// DOM Door.
-	if (DOMDoorOpen[LadderObj.Slot] == 0) {
-		XPos = 83.0/1024 * XMod;
-		YPos = 222.0/768 * YMod;
-		XWidth = 332.0/1024 * XMod;
-		YHeight = 63.0/768 * YMod;
-		DOMDoor = DoorArea(CreateWindow(class'DoorArea', XPos, YPos, XWidth, YHeight));
-		DOMDoor.bClosed = True;
-	}
-
 	// CTF ladder.
 	XPos = 95.0/1024 * XMod;
 	YPos = 363.0/768 * YMod;
@@ -127,16 +150,6 @@ function Created() {
 	CTFLadderButton.SetTextColor(TextColor);
 	CTFLadderButton.MyFont = class'UTLadderStub'.Static.GetStubClass().Static.GetHugeFont(Root);
 
-	// CTF door.
-	if (CTFDoorOpen[LadderObj.Slot] == 0) {
-		XPos = 83.0/1024 * XMod;
-		YPos = 356.0/768 * YMod;
-		XWidth = 332.0/1024 * XMod;
-		YHeight = 63.0/768 * YMod;
-		CTFDoor = DoorArea(CreateWindow(class'DoorArea', XPos, YPos, XWidth, YHeight));
-		CTFDoor.bClosed = True;
-	}
-
 	// AS Ladder.
 	XPos = 95.0/1024 * XMod;
 	YPos = 497.0/768 * YMod;
@@ -152,16 +165,6 @@ function Created() {
 	ASLadderButton.SetTextColor(TextColor);
 	ASLadderButton.MyFont = class'UTLadderStub'.Static.GetStubClass().Static.GetHugeFont(Root);
 
-	// AS Door.
-	if (ASDoorOpen[LadderObj.Slot] == 0) {
-		XPos = 83.0/1024 * XMod;
-		YPos = 488.0/768 * YMod;
-		XWidth = 332.0/1024 * XMod;
-		YHeight = 63.0/768 * YMod;
-		ASDoor = DoorArea(CreateWindow(class'DoorArea', XPos, YPos, XWidth, YHeight));
-		ASDoor.bClosed = True;
-	}
-
 	// Challenge ladder.
 	XPos = 95.0/1024 * XMod;
 	YPos = 627.0/768 * YMod;
@@ -176,16 +179,6 @@ function Created() {
 	TextColor.B = 0;
 	ChallengeLadderButton.SetTextColor(TextColor);
 	ChallengeLadderButton.MyFont = class'UTLadderStub'.Static.GetStubClass().Static.GetHugeFont(Root);
-
-	// Challenge door.
-	if (ChalDoorOpen[LadderObj.Slot] == 0) {
-		XPos = 83.0/1024 * XMod;
-		YPos = 618.0/768 * YMod;
-		XWidth = 332.0/1024 * XMod;
-		YHeight = 63.0/768 * YMod;
-		ChalDoor = DoorArea(CreateWindow(class'DoorArea', XPos, YPos, XWidth, YHeight));
-		ChalDoor.bClosed = True;
-	}
 
 	// Sala de Trofeos.
 	XPos = 656.0/1024 * XMod;
@@ -283,7 +276,7 @@ function Created() {
 
 	if (LadderObj.DMPosition >= 4) {
 		InfoArea.AddText(" ");
-		InfoArea.AddText(RankString[1]@class'APLadderLadder'.Static.GetRank(LadderObj.DOMRank));
+		InfoArea.AddText(RankString[1]@class'Ladder'.Static.GetRank(LadderObj.DOMRank));
 		
 		if (LadderObj.DOMPosition == -1) {
 			InfoArea.AddText(MatchesString@"0");
@@ -298,7 +291,7 @@ function Created() {
 
 	if (LadderObj.DOMPosition >= 4) {
 		InfoArea.AddText(" ");
-		InfoArea.AddText(RankString[2]@class'APLadderLadder'.Static.GetRank(LadderObj.CTFRank));
+		InfoArea.AddText(RankString[2]@class'Ladder'.Static.GetRank(LadderObj.CTFRank));
 		
 		if (LadderObj.CTFPosition == -1) {
 			InfoArea.AddText(MatchesString@"0");
@@ -313,7 +306,7 @@ function Created() {
 
 	if (LadderObj.CTFPosition >= 4) {
 		InfoArea.AddText(" ");
-		InfoArea.AddText(RankString[3]@class'APLadderLadder'.Static.GetRank(LadderObj.ASRank));
+		InfoArea.AddText(RankString[3]@class'Ladder'.Static.GetRank(LadderObj.ASRank));
 		if (LadderObj.ASPosition == -1) {
 			InfoArea.AddText(MatchesString@"0");
 		} else {
@@ -328,7 +321,7 @@ function Created() {
 	if ((LadderObj.DMRank == 6) && (LadderObj.DOMRank == 6) && (LadderObj.CTFRank == 6) && (LadderObj.ASRank == 6)) {
 		InfoArea.AddText(" ");
 		InfoArea.AddText(ChallengeString);
-		InfoArea.AddText(ChalPosString@class'APLadderLadder'.Static.GetRank(LadderObj.ChalRank));
+		InfoArea.AddText(ChalPosString@class'Ladder'.Static.GetRank(LadderObj.ChalRank));
 	}
 	Root.Console.bBlackOut = True;
 }
@@ -478,122 +471,6 @@ function BeforePaint (Canvas C, float X, float Y)
 	InfoArea.WinLeft = XPos;
 	InfoArea.WinTop = YPos;
 	InfoArea.MyFont = Class'UTLadderStub'.Static.GetStubClass().Static.GetSmallFont(Root);
-}
-
-function OpenDoors ()
-{
-	local bool bOneOpened;
-
-	if ( LadderObj.DMPosition >= 3 ) {
-		if ( (DOMDoorOpen[LadderObj.Slot] == 0) && (DOMDoor != None) ) {
-			DOMDoorOpen[LadderObj.Slot] = 1;
-			DOMDoor.Open();
-			SaveConfig();
-			bOneOpened = True;
-		}
-	}
-
-	if ( LadderObj.DOMPosition >= 2 ) {
-		if ( (CTFDoorOpen[LadderObj.Slot] == 0) && (CTFDoor != None) ) {
-			CTFDoorOpen[LadderObj.Slot] = 1;
-			CTFDoor.Open();
-			SaveConfig();
-			bOneOpened = True;
-		}
-	}
-
-	if ( LadderObj.CTFPosition >= 3 ) {
-		if ( (ASDoorOpen[LadderObj.Slot] == 0) && (ASDoor != None) ) {
-			ASDoorOpen[LadderObj.Slot] = 1;
-			ASDoor.Open();
-			SaveConfig();
-			bOneOpened = True;
-		}
-	}
-
-	if ((LadderObj.DMRank == 6) && (LadderObj.DOMRank == 6) && (LadderObj.CTFRank == 6) && (LadderObj.ASRank == 6)) {
-		if ( (ChalDoorOpen[LadderObj.Slot] == 0) && (ChalDoor != None) )
-		{
-			ChalDoorOpen[LadderObj.Slot] = 1;
-			ChalDoor.Open();
-			SaveConfig();
-			bOneOpened = True;
-		}
-	}
-
-	if ( (LadderObj.DMRank == 6) || (LadderObj.DOMRank == 6) || (LadderObj.CTFRank == 6) || (LadderObj.ASRank == 6) ) {
-		if ( (TrophyDoorOpen[LadderObj.Slot] == 0) && (TrophyDoor != None) )
-		{
-			TrophyDoorOpen[LadderObj.Slot] = 1;
-			TrophyDoor.Open();
-			SaveConfig();
-			bOneOpened = True;
-		}
-	}
-
-	if ( bOneOpened ) {
-		GetPlayerOwner().PlaySound(Sound'LadderSounds.ldoorsopen1b',SLOT_Interface);
-	}
-	bOpened = True;
-}
-
-function ShowWindow ()
-{
-	Super(UWindowWindow).ShowWindow();
-
-	if ((DOMDoorOpen[LadderObj.Slot] == 0) && (DOMDoor != None)) {
-		DOMDoor.bClosed = True;
-	}
-
-	if ((CTFDoorOpen[LadderObj.Slot] == 0) && (CTFDoor != None)) {
-		CTFDoor.bClosed = True;
-	}
-
-	if ((ASDoorOpen[LadderObj.Slot] == 0) && (ASDoor != None)) {
-		ASDoor.bClosed = True;
-	}
-
-	if ((ChalDoorOpen[LadderObj.Slot] == 0) && (ChalDoor != None)) {
-		ChalDoor.bClosed = True;
-	}
-
-	if ((TrophyDoorOpen[LadderObj.Slot] == 0) && (TrophyDoor != None)) {
-		TrophyDoor.bClosed = True;
-	}
-
-	OpenTime = 0.0;
-	InfoArea.Clear();
-
-	if ( Root.WinWidth < 512 ) {
-		return;
-	}
-
-	InfoArea.AddText(RankString[0] @ Class'APLadderLadder'.Static.GetRank(LadderObj.DMRank));
-	InfoArea.AddText(MatchesString @ string(LadderObj.DMPosition - 1));
-
-	if (LadderObj.DMPosition >= 3) {
-		InfoArea.AddText("");
-		InfoArea.AddText(RankString[1] @ Class'APLadderLadder'.Static.GetRank(LadderObj.DOMRank));
-		InfoArea.AddText(MatchesString @ string(LadderObj.DOMPosition - 1));
-	}
-
-	if (LadderObj.DOMPosition >= 2) {
-		InfoArea.AddText("");
-		InfoArea.AddText(RankString[2] @ Class'APLadderLadder'.Static.GetRank(LadderObj.CTFRank));
-		InfoArea.AddText(MatchesString @ string(LadderObj.CTFPosition - 1));
-	}
-
-	if (LadderObj.CTFPosition >= 3) {
-		InfoArea.AddText("");
-		InfoArea.AddText(RankString[3] @ Class'APLadderLadder'.Static.GetRank(LadderObj.ASRank));
-		InfoArea.AddText(MatchesString @ string(LadderObj.ASPosition - 1));
-	}
-
-	if ((LadderObj.DMRank == 6) && (LadderObj.DOMRank == 6) && (LadderObj.CTFRank == 6) && (LadderObj.ASRank == 6)) {
-		InfoArea.AddText(" ");
-		InfoArea.AddText(ChallengeString);
-		InfoArea.AddText(ChalPosString @ Class'APLadderLadder'.Static.GetRank(LadderObj.ChalRank));
-	}
 }
 
 defaultproperties

@@ -6,8 +6,8 @@ function EvaluateMatch(optional bool bTrophyVictory) {
 
 	if (LadderObj != None) {
 		SaveString = string(LadderObj.TournamentDifficulty);
-		for (i=0; i<class'APLadderLadder'.Default.NumTeams; i++) {
-			if (class'APLadderLadder'.Default.LadderTeams[i] == LadderObj.Team) {
+		for (i=0; i<class'Ladder'.Default.NumTeams; i++) {
+			if (class'Ladder'.Default.LadderTeams[i] == LadderObj.Team) {
 				Team = i;
 			}
 		}

@@ -1,4 +1,4 @@
-class APRatedTeamInfoDemo1 expands RatedTeamInfo;
+class APRatedTeamInfoDemo1 expands APRatedTeamInfo;
 
 // Raw Steel
 #exec TEXTURE IMPORT NAME=TLSteel FILE=textures\teamsymbols\TLSteel.PCX GROUP="TeamSymbols" MIPS=OFF

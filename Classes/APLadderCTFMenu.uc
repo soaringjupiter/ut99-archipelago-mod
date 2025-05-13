@@ -20,7 +20,7 @@ function FillInfoArea(int i) {
 }
 
 function NextPressed() {
-	local TeamBrowser TB;
+	local APTeamBrowser TB;
 	local string MapName;
 
 	if (PendingPos > ArrowPos) {
@@ -37,7 +37,7 @@ function NextPressed() {
 		}
 
 		HideWindow();
-		TB = TeamBrowser(Root.CreateWindow(class'APTeamBrowser', 100, 100, 200, 200, Root, True));
+		TB = APTeamBrowser(Root.CreateWindow(class'APTeamBrowser', 100, 100, 200, 200, Root, True));
 		TB.LadderWindow = Self;
 		TB.Ladder = LadderObj.CurrentLadder;
 		TB.Match = SelectedMatch;

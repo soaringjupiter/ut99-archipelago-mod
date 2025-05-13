@@ -1,7 +1,7 @@
 //=============================================================================
 // LadderChal
 //=============================================================================
-class APLadderChal extends Ladder;
+class APLadderChal extends LadderChal;
 
 defaultproperties
 {

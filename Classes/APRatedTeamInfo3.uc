@@ -1,4 +1,4 @@
-class APRatedTeamInfo3 expands RatedTeamInfo;
+class APRatedTeamInfo3 expands APRatedTeamInfo;
 
 // Blood Reavers
 #exec TEXTURE IMPORT NAME=TLReavers FILE=textures\teamsymbols\TLReavers.PCX GROUP="TeamSymbols" MIPS=OFF

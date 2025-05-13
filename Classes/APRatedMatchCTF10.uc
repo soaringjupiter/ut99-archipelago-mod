@@ -1,4 +1,4 @@
-class APRatedMatchCTF10 expands RatedMatchInfo;
+class APRatedMatchCTF10 expands APRatedMatchInfo;
 
 defaultproperties
 {

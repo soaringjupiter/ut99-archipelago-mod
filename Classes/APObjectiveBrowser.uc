@@ -1,19 +1,6 @@
 class APObjectiveBrowser extends ObjectiveBrowser;
 
-function NextPressed ()
-{
-	local TeamBrowser TB;
-
-	HideWindow();
-	TB = TeamBrowser(Root.CreateWindow(Class'APTeamBrowser',100.0,100.0,200.0,200.0,Root,True));
-	TB.LadderWindow = LadderWindow;
-	TB.ObjectiveWindow = self;
-	TB.LadderWindow = LadderWindow;
-	TB.Ladder = Ladder;
-	TB.Match = Match;
-	TB.GameType = GameType;
-	TB.Initialize();
-}
+var APLadder LadderWindow;
 
 function Initialize()
 {
@@ -225,4 +212,18 @@ function AddObjDesc()
 	ObjDescArea.AddText(OrdersTransmissionText);
 	ObjDescArea.AddText("---");
 	ObjDescArea.AddText(class'APLadderAS'.Static.GetObjectiveString(Match, SelectedO, AI));
+}
+
+function NextPressed()
+{
+	local APTeamBrowser TB;
+
+	HideWindow();
+	TB = APTeamBrowser(Root.CreateWindow(class'APTeamBrowser', 100, 100, 200, 200, Root, True));
+	TB.ObjectiveWindow = Self;
+	TB.LadderWindow = LadderWindow;
+	TB.Ladder = Ladder;
+	TB.Match = Match;
+	TB.GameType = GameType;
+	TB.Initialize();
 }

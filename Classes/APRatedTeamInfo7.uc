@@ -1,4 +1,4 @@
-class APRatedTeamInfo7 expands RatedTeamInfo;
+class APRatedTeamInfo7 expands APRatedTeamInfo;
 
 // Dark Phalanx
 #exec TEXTURE IMPORT NAME=TSkaarj1 FILE=textures\teamsymbols\skaarjteam_a.pcx GROUP="TeamSymbols" MIPS=OFF
