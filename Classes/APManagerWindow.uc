@@ -100,7 +100,9 @@ function Created() {
 	MapInventoryObj = APMapInventory(GetPlayerOwner().FindInventoryType(class'APMapInventory'));
 
 	if (MapInventoryObj == None) {
-		Log("APManagerWindow: Player has no APMapInventory!!");
+		Log("APManagerWindow: Player has no APMapInventory!! Creating one.");
+        MapInventoryObj = GetPlayerOwner().Spawn( class'APMapInventory' );
+        MapInventoryObj.GiveTo( GetPlayerOwner() );   // attach to the pawn
 	}
 
 	// TDM ladder.

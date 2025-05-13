@@ -1,10 +1,12 @@
-class APMapInventory extends Inventory;
+class APMapInventory extends Inventory config(APLadder);
 
 // ---------------  RANDOM-MAP CAMPAIGN  ---------------
-var travel int   UnlockedMask[5]; // DM, DOM, CTF, AS, CHAL  (keep order!)
-var travel int   CompletedMask[5];
-var travel int           LastLadder;
-var travel int           LastMap;
+var travel int UnlockedMask[5]; // DM, DOM, CTF, AS, CHAL  (keep order!)
+var travel int CompletedMask[5];
+var config int SavedUnlocked[5];
+var config int SavedCompleted[5];
+var travel int LastLadder;
+var travel int LastMap;
 
 static function int GetLadderIndex( class<Ladder> L )
 {
@@ -32,15 +34,27 @@ function bool IsCompleted( class<Ladder> L, int Map )
 function UnlockMap( class<Ladder> L, int Map )
 {
     local int idx;
+	local int loop;
     idx = GetLadderIndex(L);
     UnlockedMask[idx] = UnlockedMask[idx] | (1 << Map);
+	for (loop = 0; loop < 5; loop++)
+	{
+		SavedUnlocked[loop] = UnlockedMask[loop];
+	}
+    SaveConfig();
 }
 
 function MarkCompleted( class<Ladder> L, int Map )
 {
     local int idx;
+	local int loop;
     idx = GetLadderIndex(L);
     CompletedMask[idx] = CompletedMask[idx] | (1 << Map);
+	for (loop = 0; loop < 5; loop++)
+	{
+		SavedCompleted[loop] = CompletedMask[loop];
+	}
+    SaveConfig();
 }
 
 function bool HasAnyUnlocked( int LadderIndex )
@@ -72,7 +86,7 @@ function UnlockRandomMap()
 			case 3 : L = class'APLadderAS'   ; break;
 			default: L = class'APLadderChal'; break;
 		}
-		if ( !IsUnlocked(L, MapN) )
+		if ( !IsUnlocked(L, MapN) && MapN != 0 )
 		{
 			Log("APMapInventory: Unlocking "$L$" map "$MapN);
 			UnlockMap(L, MapN);
@@ -81,14 +95,23 @@ function UnlockRandomMap()
 	}
 }
 
-// Remember the map we just sent the player to.
-// Filled in APLadder.StartMap(), read back in APLadder.EvaluateMatch().
+function PostBeginPlay()
+{
+	local int i;
+
+    Super.PostBeginPlay();
+	for (i = 0; i < 5; i++)
+	{
+		UnlockedMask[i] = SavedUnlocked[i];
+		CompletedMask[i] = SavedCompleted[i];
+	}
+}
 		
 function Reset()
 {
 	for (LastLadder = 0 ; LastLadder < 5 ; ++LastLadder)
 	{
-		UnlockedMask [LastLadder] = 0;
+		UnlockedMask[LastLadder] = 0;
 		CompletedMask[LastLadder] = 0;
 	}
 	LastLadder = -1;
@@ -106,4 +129,10 @@ function Destroyed()
 {
 	Log("Something destroyed an APMapInventory!!");
 	Super.Destroyed();
+}
+
+defaultproperties
+{
+    bHidden=True
+    bTravel=True
 }
