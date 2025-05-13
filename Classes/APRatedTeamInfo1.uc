@@ -1,4 +1,4 @@
-class APRatedTeamInfo1 expands APRatedTeamInfo;
+class APRatedTeamInfo1 expands RatedTeamInfo;
 
 // Iron Guard
 #exec TEXTURE IMPORT NAME=TLGuard FILE=textures\teamsymbols\TLGuard.PCX GROUP="TeamSymbols" MIPS=OFF

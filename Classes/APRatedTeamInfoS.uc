@@ -1,4 +1,4 @@
-class APRatedTeamInfoS expands APRatedTeamInfo;
+class APRatedTeamInfoS expands RatedTeamInfo;
 
 // Surrogate Team
 
