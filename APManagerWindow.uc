@@ -1,4 +1,21 @@
-class APManagerWindow extends ManagerWindow Config(APLadder);
+class APManagerWindow extends ManagerWindowStub config(APLadder);
+
+// Manager
+#exec TEXTURE IMPORT NAME=Sel11 FILE=TEXTURES\Select\Sel11.PCX GROUP=Skins MIPS=OFF
+#exec TEXTURE IMPORT NAME=Sel12 FILE=TEXTURES\Select\Sel12.PCX GROUP=Skins MIPS=OFF
+#exec TEXTURE IMPORT NAME=Sel13 FILE=TEXTURES\Select\Sel13.PCX GROUP=Skins MIPS=OFF
+#exec TEXTURE IMPORT NAME=Sel14 FILE=TEXTURES\Select\Sel14.PCX GROUP=Skins MIPS=OFF
+#exec TEXTURE IMPORT NAME=Sel21 FILE=TEXTURES\Select\Sel21.PCX GROUP=Skins MIPS=OFF
+#exec TEXTURE IMPORT NAME=Sel22 FILE=TEXTURES\Select\Sel22.PCX GROUP=Skins MIPS=OFF
+#exec TEXTURE IMPORT NAME=Sel23 FILE=TEXTURES\Select\Sel23.PCX GROUP=Skins MIPS=OFF
+#exec TEXTURE IMPORT NAME=Sel24 FILE=TEXTURES\Select\Sel24.PCX GROUP=Skins MIPS=OFF
+#exec TEXTURE IMPORT NAME=Sel31 FILE=TEXTURES\Select\Sel31.PCX GROUP=Skins MIPS=OFF
+#exec TEXTURE IMPORT NAME=Sel32 FILE=TEXTURES\Select\Sel32.PCX GROUP=Skins MIPS=OFF
+#exec TEXTURE IMPORT NAME=Sel33 FILE=TEXTURES\Select\Sel33.PCX GROUP=Skins MIPS=OFF
+#exec TEXTURE IMPORT NAME=Sel34 FILE=TEXTURES\Select\Sel34.PCX GROUP=Skins MIPS=OFF
+
+#exec TEXTURE IMPORT NAME=DoorL FILE=TEXTURES\Doors\doorL.PCX GROUP=Skins MIPS=OFF
+#exec TEXTURE IMPORT NAME=DoorR FILE=TEXTURES\Doors\doorR.PCX GROUP=Skins MIPS=OFF
 
 // Background
 var texture BG1[4];
@@ -48,11 +65,38 @@ var NotifyButton NextButton;
 var int SelectedLadder;
 var string LadderTypes[5];
 
-var LadderInventory LadderObj;
-var APMapInventory MapInventoryObj;
+var APLadderInventory LadderObj;
 
 var localized string RankString[4];
 var localized string MatchesString;
+
+
+
+
+
+function StartLadder () {
+	UTConsole(GetPlayerOwner().Player.Console).ManagerWindowClass = "Archipelago.APManagerWindow";
+	UTConsole(GetPlayerOwner().Player.Console).UTLadderDMClass = "Archipelago.APLadderDMMenu";
+	UTConsole(GetPlayerOwner().Player.Console).UTLadderDOMClass = "Archipelago.APLadderDOMMenu";
+	UTConsole(GetPlayerOwner().Player.Console).UTLadderCTFClass = "Archipelago.APLadderCTFMenu";
+	UTConsole(GetPlayerOwner().Player.Console).UTLadderASClass = "Archipelago.APLadderASMenu";
+	UTConsole(GetPlayerOwner().Player.Console).UTLadderChalClass = "Archipelago.APLadderChalMenu";
+	UTConsole(GetPlayerOwner().Player.Console).InterimObjectType = "Archipelago.MiNewGameInterimObject";
+	UTConsole(GetPlayerOwner().Player.Console).SlotWindowType = "Archipelago.MiSlotWindow";
+	Log("Now Playing AP Ladder");
+}
+
+function SwitchBack () {
+	UTConsole(GetPlayerOwner().Player.Console).ManagerWindowClass = "UTMenu.ManagerWindow";
+	UTConsole(GetPlayerOwner().Player.Console).UTLadderDMClass = "UTMenu.UTLadderDM";
+	UTConsole(GetPlayerOwner().Player.Console).UTLadderDOMClass = "UTMenu.UTLadderDOM";
+	UTConsole(GetPlayerOwner().Player.Console).UTLadderCTFClass = "UTMenu.UTLadderCTF";
+	UTConsole(GetPlayerOwner().Player.Console).UTLadderASClass = "UTMenu.UTLadderAS";
+	UTConsole(GetPlayerOwner().Player.Console).UTLadderChalClass = "UTMenu.UTLadderChal";
+	UTConsole(GetPlayerOwner().Player.Console).InterimObjectType = "UTMenu.NewGameInterimObject";
+	UTConsole(GetPlayerOwner().Player.Console).SlotWindowType = "UTMenu.SlotWindow";
+	Log("Now Playing UT Ladder");
+}
 
 function Created() {
 	local float Xs, Ys;
@@ -88,20 +132,13 @@ function Created() {
 	// Window components.
 
 	// Check ladder object.
-	LadderObj = LadderInventory(GetPlayerOwner().FindInventoryType(class'LadderInventory'));
+	LadderObj = APLadderInventory(GetPlayerOwner().FindInventoryType(class'APLadderInventory'));
 
 	if (LadderObj == None) {
-		Log("APManagerWindow: Player has no LadderInventory!!");
+		Log("APManagerWindow: Player has no APLadderInventory!!");
 	}
 
 	LadderObj.LastMatchType = 0;
-
-	// Check map inventory object.
-	MapInventoryObj = APMapInventory(GetPlayerOwner().FindInventoryType(class'APMapInventory'));
-
-	if (MapInventoryObj == None) {
-		Log("APManagerWindow: Player has no APMapInventory!!");
-	}
 
 	// TDM ladder.
 	XPos = 95.0/1024 * XMod;
@@ -119,7 +156,7 @@ function Created() {
 	DMLadderButton.MyFont = class'UTLadderStub'.Static.GetStubClass().Static.GetHugeFont(Root);
 
 	// DM Door.
-	if (!MapInventoryObj.HasAnyUnlocked(0)) {
+	if (!LadderObj.HasAnyUnlocked(0)) {
 		XPos = 83.0/1024 * XMod;
 		YPos = 93.0/768 * YMod;
 		XWidth = 332.0/1024 * XMod;
@@ -144,7 +181,7 @@ function Created() {
 	DOMLadderButton.MyFont = class'UTLadderStub'.Static.GetStubClass().Static.GetHugeFont(Root);
 
 	// DOM Door.
-	if (!MapInventoryObj.HasAnyUnlocked(1)) {
+	if (!LadderObj.HasAnyUnlocked(1)) {
 		XPos = 83.0/1024 * XMod;
 		YPos = 222.0/768 * YMod;
 		XWidth = 332.0/1024 * XMod;
@@ -175,7 +212,7 @@ function Created() {
 	CTFLadderButton.MyFont = class'UTLadderStub'.Static.GetStubClass().Static.GetHugeFont(Root);
 
 	// CTF door.
-	if (!MapInventoryObj.HasAnyUnlocked(2)) {
+	if (!LadderObj.HasAnyUnlocked(2)) {
 		XPos = 83.0/1024 * XMod;
 		YPos = 356.0/768 * YMod;
 		XWidth = 332.0/1024 * XMod;
@@ -200,7 +237,7 @@ function Created() {
 	ASLadderButton.MyFont = class'UTLadderStub'.Static.GetStubClass().Static.GetHugeFont(Root);
 
 	// AS Door.
-	if (!MapInventoryObj.HasAnyUnlocked(3)) {
+	if (!LadderObj.HasAnyUnlocked(3)) {
 		XPos = 83.0/1024 * XMod;
 		YPos = 488.0/768 * YMod;
 		XWidth = 332.0/1024 * XMod;
@@ -225,7 +262,7 @@ function Created() {
 	ChallengeLadderButton.MyFont = class'UTLadderStub'.Static.GetStubClass().Static.GetHugeFont(Root);
 
 	// Challenge door.
-	if (!MapInventoryObj.HasAnyUnlocked(4)) {
+	if (!LadderObj.HasAnyUnlocked(4)) {
 		XPos = 83.0/1024 * XMod;
 		YPos = 618.0/768 * YMod;
 		XWidth = 332.0/1024 * XMod;
@@ -320,7 +357,7 @@ function Created() {
 
 	if (LadderObj.DMPosition >= 4) {
 		InfoArea.AddText(" ");
-		InfoArea.AddText(RankString[1]@class'Ladder'.Static.GetRank(LadderObj.DOMRank));
+		InfoArea.AddText(RankString[1]@class'APLadderLadder'.Static.GetRank(LadderObj.DOMRank));
 		
 		if (LadderObj.DOMPosition == -1) {
 			InfoArea.AddText(MatchesString@"0");
@@ -335,7 +372,7 @@ function Created() {
 
 	if (LadderObj.DOMPosition >= 4) {
 		InfoArea.AddText(" ");
-		InfoArea.AddText(RankString[2]@class'Ladder'.Static.GetRank(LadderObj.CTFRank));
+		InfoArea.AddText(RankString[2]@class'APLadderLadder'.Static.GetRank(LadderObj.CTFRank));
 		
 		if (LadderObj.CTFPosition == -1) {
 			InfoArea.AddText(MatchesString@"0");
@@ -350,7 +387,7 @@ function Created() {
 
 	if (LadderObj.CTFPosition >= 4) {
 		InfoArea.AddText(" ");
-		InfoArea.AddText(RankString[3]@class'Ladder'.Static.GetRank(LadderObj.ASRank));
+		InfoArea.AddText(RankString[3]@class'APLadderLadder'.Static.GetRank(LadderObj.ASRank));
 		if (LadderObj.ASPosition == -1) {
 			InfoArea.AddText(MatchesString@"0");
 		} else {
@@ -365,14 +402,14 @@ function Created() {
 	if ((LadderObj.DMRank == 6) && (LadderObj.DOMRank == 6) && (LadderObj.CTFRank == 6) && (LadderObj.ASRank == 6)) {
 		InfoArea.AddText(" ");
 		InfoArea.AddText(ChallengeString);
-		InfoArea.AddText(ChalPosString@class'Ladder'.Static.GetRank(LadderObj.ChalRank));
+		InfoArea.AddText(ChalPosString@class'APLadderLadder'.Static.GetRank(LadderObj.ChalRank));
 	}
 	Root.Console.bBlackOut = True;
 }
 
 function BeforePaint (Canvas C, float X, float Y)
 {
-	local LadderInventory LadderObj;
+	local APLadderInventory LadderObj;
 	local float Xs;
 	local float Ys;
 	local int i;
@@ -601,31 +638,31 @@ function ShowWindow ()
 		return;
 	}
 
-	InfoArea.AddText(RankString[0] @ Class'Ladder'.Static.GetRank(LadderObj.DMRank));
+	InfoArea.AddText(RankString[0] @ Class'APLadderLadder'.Static.GetRank(LadderObj.DMRank));
 	InfoArea.AddText(MatchesString @ string(LadderObj.DMPosition - 1));
 
 	if (LadderObj.DMPosition >= 3) {
 		InfoArea.AddText("");
-		InfoArea.AddText(RankString[1] @ Class'Ladder'.Static.GetRank(LadderObj.DOMRank));
+		InfoArea.AddText(RankString[1] @ Class'APLadderLadder'.Static.GetRank(LadderObj.DOMRank));
 		InfoArea.AddText(MatchesString @ string(LadderObj.DOMPosition - 1));
 	}
 
 	if (LadderObj.DOMPosition >= 2) {
 		InfoArea.AddText("");
-		InfoArea.AddText(RankString[2] @ Class'Ladder'.Static.GetRank(LadderObj.CTFRank));
+		InfoArea.AddText(RankString[2] @ Class'APLadderLadder'.Static.GetRank(LadderObj.CTFRank));
 		InfoArea.AddText(MatchesString @ string(LadderObj.CTFPosition - 1));
 	}
 
 	if (LadderObj.CTFPosition >= 3) {
 		InfoArea.AddText("");
-		InfoArea.AddText(RankString[3] @ Class'Ladder'.Static.GetRank(LadderObj.ASRank));
+		InfoArea.AddText(RankString[3] @ Class'APLadderLadder'.Static.GetRank(LadderObj.ASRank));
 		InfoArea.AddText(MatchesString @ string(LadderObj.ASPosition - 1));
 	}
 
 	if ((LadderObj.DMRank == 6) && (LadderObj.DOMRank == 6) && (LadderObj.CTFRank == 6) && (LadderObj.ASRank == 6)) {
 		InfoArea.AddText(" ");
 		InfoArea.AddText(ChallengeString);
-		InfoArea.AddText(ChalPosString @ Class'Ladder'.Static.GetRank(LadderObj.ChalRank));
+		InfoArea.AddText(ChalPosString @ Class'APLadderLadder'.Static.GetRank(LadderObj.ChalRank));
 	}
 }
 
