@@ -63,8 +63,6 @@ function EvaluateMatch(optional bool bTrophyVictory) {
 	LadderPos = LadderObj.CTFPosition;
 	LadderRank = LadderObj.CTFRank;
 
-	class'APManagerWindow'.static.ReportMatchResult( Ladder, SelectedMatch );
-
 	if (LadderObj.CTFRank == 6) {
 		Super.EvaluateMatch(True);
 	} else {

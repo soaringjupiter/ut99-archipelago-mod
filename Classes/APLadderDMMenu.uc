@@ -74,8 +74,6 @@ function EvaluateMatch(optional bool bTrophyVictory)
 	LadderPos = LadderObj.DMPosition;
 	LadderRank = LadderObj.DMRank;
 
-	class'APManagerWindow'.static.ReportMatchResult( Ladder, SelectedMatch );
-
 	if (LadderObj.DMRank == 6) {
 		Super.EvaluateMatch(True);
 	} else {
