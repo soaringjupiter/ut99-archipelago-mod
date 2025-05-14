@@ -31,7 +31,12 @@ function EvaluateMatch(optional bool bTrophyVictory) {
 		if ( !MapInventoryObj.IsCompleted( Dummy, MapInventoryObj.LastMap ) )
 		{
 			MapInventoryObj.MarkCompleted( Dummy, MapInventoryObj.LastMap );
-			MapInventoryObj.UnlockRandomMap();   // exactly **one** fresh unlock
+			if ( !MapInventoryObj.IsCompleted( Dummy, MapInventoryObj.LastMap ) )
+			{
+				MapInventoryObj.MarkCompleted( Dummy, MapInventoryObj.LastMap );
+
+				MapInventoryObj.NotifyBeat   ( Dummy, MapInventoryObj.LastMap );  
+			}
 		}
 		MapInventoryObj.LastLadder = -1;   // consume the marker
 	}
