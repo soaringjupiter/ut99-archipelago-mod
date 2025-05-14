@@ -94,7 +94,7 @@ function bool ParseShortName( string Short, out int Ladder, out int Map )
                 for ( MapI=0 ; MapI<4 ; ++MapI )
                     if ( ChalNames[MapI] == Short )
                     {
-                        Ladder = LadderI; Map = MapI + 1; return True;
+                        Ladder = LadderI; Map = MapI; return True;
                     }
                 break;
         }

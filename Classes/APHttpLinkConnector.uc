@@ -20,8 +20,6 @@ class APHttpLinkConnector extends IpDrv.TcpLink
 var config string BridgeHost;
 /** port of the local bridge */
 var config int    BridgePort;
-/** how long to wait (seconds) before re-opening /poll after it closed */
-var config float  PollInterval;
 
 /** how many seconds we allow a connection attempt to take */
 var config float  ConnectTimeout;
@@ -179,15 +177,11 @@ event Closed()
     }
 
     // if we just finished /poll → schedule next poll
-    if ( CurrentPath == "/poll" )
-        SetTimer( PollInterval, False );
+    if ( CurrentPath == "/poll" ) {
+        SetTimer( 2, False );
+    }
     else
         Destroy();  // short-lived /beat connector
-}
-
-event Timer()
-{
-    StartPoll();
 }
 
 // ---------------------------------------------------------------------------
@@ -273,19 +267,24 @@ function HandleUnlock( string MapShortName )
 // utility
 function RetryLater()
 {
-    Log( Name $ ": retrying in " $ PollInterval $ " seconds" );
+    Log( Name $ ": retrying in " $ 2 $ " seconds" );
     // wait a few seconds, then try to re-establish /poll
-    if ( CurrentPath == "/poll" )
-        SetTimer( PollInterval, False );
+    if ( CurrentPath == "/poll" ) {
+        SetTimer( 2, False );
+    }
     else
         Destroy();
+}
+
+function Timer()
+{
+    StartPoll();
 }
 
 defaultproperties
 {
     BridgeHost   = "127.0.0.1"
     BridgePort   = 8787
-    PollInterval = 3.0
     ConnectTimeout = 5.0
 
     bAlwaysTick  = True
