@@ -5,8 +5,6 @@ var travel int UnlockedMask[5]; // DM, DOM, CTF, AS, CHAL  (keep order!)
 var travel int CompletedMask[5];
 var config int SavedUnlocked[5];
 var config int SavedCompleted[5];
-var travel int LastLadder;
-var travel int LastMap;
 
 var const string DMNames[16] ; // Oblivion … Peak
 var const string DOMNames[9] ; // Condemned … MetalDream
@@ -51,7 +49,15 @@ function UnlockByShortName( string Short )
 
 function NotifyBeat( class<Ladder> L, int MapIdx )
 {
-    class'APHttpLinkConnector'.static.SendBeat( Self, NameFor( GetLadderIndex(L), MapIdx )$" - Beaten" );
+    switch ( GetLadderIndex(L) )
+    {
+        case 0: class'APHttpLinkConnector'.static.SendBeat( Self, DMNames [MapIdx] ); break;
+        case 1: class'APHttpLinkConnector'.static.SendBeat( Self, DOMNames[MapIdx] ); break;
+        case 2: class'APHttpLinkConnector'.static.SendBeat( Self, CTFNames[MapIdx] ); break;
+        case 3: class'APHttpLinkConnector'.static.SendBeat( Self, ASNames [MapIdx] ); break;
+        default: class'APHttpLinkConnector'.static.SendBeat( Self, ChalNames[MapIdx] ); break;
+    }
+    
 }
 
 function bool ParseShortName( string Short, out int Ladder, out int Map )
@@ -175,13 +181,16 @@ function PostBeginPlay()
 		
 function Reset()
 {
-	for (LastLadder = 0 ; LastLadder < 5 ; ++LastLadder)
+    local int Ladder;
+	for (Ladder = 0 ; Ladder < 5 ; ++Ladder)
 	{
-		UnlockedMask[LastLadder] = 0;
-		CompletedMask[LastLadder] = 0;
+		UnlockedMask[Ladder] = 0;
+		CompletedMask[Ladder] = 0;
+        SavedUnlocked[Ladder] = 0;
+        SavedCompleted[Ladder] = 0;
 	}
-	LastLadder = -1;
-	LastMap = -1;
+    SaveConfig();
+    Log("Resetting APMapInventory");
 }
 
 function GiveTo( Pawn Other )
@@ -201,56 +210,56 @@ defaultproperties
     bHidden=True
     bTravel=True
 
-	DMNames(0)="Oblivion"
-    DMNames(1)="Stalwart"
-    DMNames(2)="Fractal"
-    DMNames(3)="Turbine"
-    DMNames(4)="Codex"
-    DMNames(5)="Pressure"
-    DMNames(6)="ArcaneTemple"
-    DMNames(7)="Grinder"
-    DMNames(8)="Malevolence"
-    DMNames(9)="KGalleon"
-    DMNames(10)="Tempest"
-    DMNames(11)="Barricade"
-    DMNames(12)="Shrapnel]["
-    DMNames(13)="Liandri"
-    DMNames(14)="Conveyor"
-    DMNames(15)="Peak"
+	DMNames(0)="DM-Oblivion"
+    DMNames(1)="DM-Stalwart"
+    DMNames(2)="DM-Fractal"
+    DMNames(3)="DM-Turbine"
+    DMNames(4)="DM-Codex"
+    DMNames(5)="DM-Pressure"
+    DMNames(6)="DM-ArcaneTemple"
+    DMNames(7)="DM-Grinder"
+    DMNames(8)="DM-Malevolence"
+    DMNames(9)="DM-KGalleon"
+    DMNames(10)="DM-Tempest"
+    DMNames(11)="DM-Barricade"
+    DMNames(12)="DM-Shrapnel]["
+    DMNames(13)="DM-Liandri"
+    DMNames(14)="DM-Conveyor"
+    DMNames(15)="DM-Peak"
 
-    DOMNames(0)="Condemned"
-    DOMNames(1)="Ghardhen"
-    DOMNames(2)="Cryptic"
-    DOMNames(3)="Cinder"
-    DOMNames(4)="Gearbolt"
-    DOMNames(5)="Leadworks"
-    DOMNames(6)="Olden"
-    DOMNames(7)="Sesmar"
-    DOMNames(8)="MetalDream"
+    DOMNames(0)="DOM-Condemned"
+    DOMNames(1)="DOM-Ghardhen"
+    DOMNames(2)="DOM-Cryptic"
+    DOMNames(3)="DOM-Cinder"
+    DOMNames(4)="DOM-Gearbolt"
+    DOMNames(5)="DOM-Leadworks"
+    DOMNames(6)="DOM-Olden"
+    DOMNames(7)="DOM-Sesmar"
+    DOMNames(8)="DOM-MetalDream"
 
-    CTFNames(0)="Niven"
-    CTFNames(1)="Facing Worlds"
-    CTFNames(2)="EternalCave"
-    CTFNames(3)="Coret"
-    CTFNames(4)="Gauntlet"
-    CTFNames(5)="Dreary"
-    CTFNames(6)="Command"
-    CTFNames(7)="LavaGiant"
-    CTFNames(8)="November"
-    CTFNames(9)="Hydro16"
-    CTFNames(10)="Orbital"
+    CTFNames(0)="CTF-Niven"
+    CTFNames(1)="CTF-Facing Worlds"
+    CTFNames(2)="CTF-EternalCave"
+    CTFNames(3)="CTF-Coret"
+    CTFNames(4)="CTF-Gauntlet"
+    CTFNames(5)="CTF-Dreary"
+    CTFNames(6)="CTF-Command"
+    CTFNames(7)="CTF-LavaGiant"
+    CTFNames(8)="CTF-November"
+    CTFNames(9)="CTF-Hydro16"
+    CTFNames(10)="CTF-Orbital"
 
-    ASNames(0)="Frigate"
-    ASNames(1)="HiSpeed"
-    ASNames(2)="Rook"
-    ASNames(3)="Mazon"
-    ASNames(4)="OceanFloor"
-    ASNames(5)="Overlord"
+    ASNames(0)="AS-Frigate"
+    ASNames(1)="AS-HiSpeed"
+    ASNames(2)="AS-Rook"
+    ASNames(3)="AS-Mazon"
+    ASNames(4)="AS-OceanFloor"
+    ASNames(5)="AS-Overlord"
 
-    ChalNames(0)="Phobos"
-    ChalNames(1)="Morpheus"
-    ChalNames(2)="Zeto"
-    ChalNames(3)="HyperBlast"
+    ChalNames(0)="DM-Phobos"
+    ChalNames(1)="DM-Morpheus"
+    ChalNames(2)="DM-Zeto"
+    ChalNames(3)="DM-HyperBlast"
 
 	BridgePort=  8787
 }

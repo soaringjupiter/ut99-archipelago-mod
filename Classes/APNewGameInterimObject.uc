@@ -44,6 +44,7 @@ function PostBeginPlay() {
 	if (MapInventoryObj == None) {
 		// Make them a MapInventory.
 		MapInventoryObj = Spawn(class'APMapInventory');
+		MapInventoryObj.Reset();
 		Log("Created a new MapInventory.");
 		MapInventoryObj.GiveTo(PlayerPawn(Owner));
 	}

@@ -14,31 +14,25 @@ function Created() {
 function EvaluateMatch(optional bool bTrophyVictory) {
 	local string SaveString;
 	local int Team, i;
-	local class<Ladder> Dummy; // just to get a class reference
 
-	if ( MapInventoryObj != None &&
-		 MapInventoryObj.LastLadder >= 0 )
+	Log("EvaluateMatch: " $ LadderObj.CurrentLadder $ " " $ LadderPos - 1);
+
+	if ( MapInventoryObj == None ) {
+		Log("EvaluateMatch: Player has no APMapInventory!! Creating one.");
+        MapInventoryObj = GetPlayerOwner().Spawn( class'APMapInventory' );
+        MapInventoryObj.GiveTo( GetPlayerOwner() );   // attach to the pawn
+	}
+
+	if ( MapInventoryObj != None )
 	{
-		switch ( MapInventoryObj.LastLadder )
-		{
-			case 0 : Dummy = class'APLadderDM'   ; break;
-			case 1 : Dummy = class'APLadderCTF'  ; break;
-			case 2 : Dummy = class'APLadderDOM'  ; break;
-			case 3 : Dummy = class'APLadderAS'   ; break;
-			default: Dummy = class'APLadderChal'; break;
-		}
+		Log("EvaluateMatch: " $ LadderObj.CurrentLadder $ " " $ LadderPos - 1);
 
-		if ( !MapInventoryObj.IsCompleted( Dummy, MapInventoryObj.LastMap ) )
+		if ( !MapInventoryObj.IsCompleted( LadderObj.CurrentLadder, LadderPos - 1 ) )
 		{
-			MapInventoryObj.MarkCompleted( Dummy, MapInventoryObj.LastMap );
-			if ( !MapInventoryObj.IsCompleted( Dummy, MapInventoryObj.LastMap ) )
-			{
-				MapInventoryObj.MarkCompleted( Dummy, MapInventoryObj.LastMap );
-
-				MapInventoryObj.NotifyBeat   ( Dummy, MapInventoryObj.LastMap );  
-			}
+			Log("EvaluateMatch: MarkCompleted " $ LadderObj.CurrentLadder $ " " $ LadderPos - 1);
+			MapInventoryObj.MarkCompleted( LadderObj.CurrentLadder, LadderPos - 1 );
+			MapInventoryObj.NotifyBeat   ( LadderObj.CurrentLadder, LadderPos - 1 );
 		}
-		MapInventoryObj.LastLadder = -1;   // consume the marker
 	}
 
 	if (LadderObj != None) {
@@ -86,12 +80,6 @@ function EvaluateMatch(optional bool bTrophyVictory) {
 
 function StartMap(string StartMap, int Rung, string GameType)
 {
-	if (MapInventoryObj != None)
-	{
-		MapInventoryObj.LastLadder = MapInventoryObj.GetLadderIndex( LadderObj.CurrentLadder );
-		MapInventoryObj.LastMap    = Rung;
-	}
-
 	super.StartMap( StartMap, Rung, GameType );
 }
 
