@@ -27,10 +27,10 @@ defaultproperties
      RankedGame(1)=3
      RankedGame(2)=5
      RankedGame(3)=6
-     FragLimits(0)=1
-     FragLimits(1)=1
-     FragLimits(2)=1
-     FragLimits(3)=1
+     FragLimits(0)=15
+     FragLimits(1)=15
+     FragLimits(2)=15
+     FragLimits(3)=15
      MatchInfo(0)="Archipelago.APRatedMatchChal1"
      MatchInfo(1)="Archipelago.APRatedMatchChal2"
      MatchInfo(2)="Archipelago.APRatedMatchChal3"

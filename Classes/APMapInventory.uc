@@ -151,6 +151,7 @@ function UnlockMap( class<Ladder> L, int Map )
 	{
 		SavedUnlocked[loop] = UnlockedMask[loop];
 	}
+    BroadcastMessage( "Received unlock for " $ L$" "$Map );
     SaveConfig();
 }
 
