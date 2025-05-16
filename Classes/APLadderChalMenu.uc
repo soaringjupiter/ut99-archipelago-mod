@@ -1,5 +1,7 @@
 class APLadderChalMenu extends APLadder;
 
+var int LastMatch;
+
 function Created() {
 	Super.Created();
 
@@ -21,6 +23,8 @@ function NextPressed() {
 		return;
 	}
 
+	Super.UpdateLastMatch(SelectedMatch);
+
 	HideWindow();
 	EB = APEnemyBrowser(Root.CreateWindow(class'APEnemyBrowser', 100, 100, 200, 200, Root, True));
 	EB.LadderWindow = Self;
@@ -37,25 +41,6 @@ function NextPressed() {
 }
 
 function EvaluateMatch(optional bool bTrophyVictory) {
-	if (LadderObj.PendingPosition > LadderObj.ChalPosition) {
-		PendingPos = LadderObj.PendingPosition;
-		LadderObj.ChalPosition = LadderObj.PendingPosition;
-	}
-
-	if (LadderObj.PendingRank > LadderObj.ChalRank) {
-		LadderObj.ChalRank = LadderObj.PendingRank;
-		LadderObj.PendingRank = 0;
-	}
-
-	LadderPos = LadderObj.ChalPosition;
-	LadderRank = LadderObj.ChalRank;
-
-	if (LadderObj.ChalRank == 6) {
-		Super.EvaluateMatch(True);
-	} else {
-		Super.EvaluateMatch();
-	}
-
 	Super.EvaluateMatch();
 }
 

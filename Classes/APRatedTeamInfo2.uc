@@ -1,7 +1,7 @@
 class APRatedTeamInfo2 expands RatedTeamInfo;
 
 // Black Legion
-#exec TEXTURE IMPORT NAME=TLLegion FILE=textures\teamsymbols\TLLegion.PCX GROUP="TeamSymbols" MIPS=OFF
+
 
 defaultproperties
 {

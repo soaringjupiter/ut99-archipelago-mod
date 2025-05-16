@@ -3,7 +3,7 @@ class APRatedTeamInfoS expands RatedTeamInfo;
 // Surrogate Team
 
 // Thunder Crash
-#exec TEXTURE IMPORT NAME=TLThunder FILE=textures\teamsymbols\TLThunder.PCX GROUP="TeamSymbols" MIPS=OFF
+
 
 defaultproperties
 {

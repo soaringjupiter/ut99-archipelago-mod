@@ -1,5 +1,7 @@
 class APLadderASMenu extends APLadder;
 
+var int LastMatch;
+
 function Created()
 {
 	Super.Created();
@@ -28,6 +30,8 @@ function NextPressed()
 		return;
 	}
 
+	Super.UpdateLastMatch(SelectedMatch);
+
 	HideWindow();
 	OB = ObjectiveBrowser(Root.CreateWindow(class'APObjectiveBrowser', 100, 100, 200, 200, Root, True));
 	OB.LadderWindow = Self;
@@ -39,24 +43,7 @@ function NextPressed()
 
 function EvaluateMatch(optional bool bTrophyVictory)
 {
-	if (LadderObj.PendingPosition > LadderObj.ASPosition) {
-		PendingPos = LadderObj.PendingPosition;
-		LadderObj.ASPosition = LadderObj.PendingPosition;
-	}
-
-	if (LadderObj.PendingRank > LadderObj.ASRank) {
-		LadderObj.ASRank = LadderObj.PendingRank;
-		LadderObj.PendingRank = 0;
-	}
-
-	LadderPos = LadderObj.ASPosition;
-	LadderRank = LadderObj.ASRank;
-
-	if (LadderObj.ASRank == 6) {
-		Super.EvaluateMatch(True);
-	} else {
-		Super.EvaluateMatch();
-	}
+	Super.EvaluateMatch();
 }
 
 defaultproperties {

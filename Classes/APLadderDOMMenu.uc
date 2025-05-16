@@ -1,5 +1,7 @@
 class APLadderDOMMenu extends APLadder;
 
+var int LastMatch;
+
 function Created() {
 	Super.Created();
 
@@ -27,6 +29,8 @@ function NextPressed() {
 		return;
 	}
 
+	Super.UpdateLastMatch(SelectedMatch);
+
 	if (SelectedMatch == 0) {
 		MapName = LadderObj.CurrentLadder.Default.MapPrefix$Ladder.Static.GetMap(0);
 		CloseUp();
@@ -48,27 +52,7 @@ function NextPressed() {
 
 function EvaluateMatch(optional bool bTrophyVictory)
 {
-	local int Pos;
-	local string MapName;
-
-	if (LadderObj.PendingPosition > LadderObj.DOMPosition) {
-		PendingPos = LadderObj.PendingPosition;
-		LadderObj.DOMPosition = LadderObj.PendingPosition;
-	}
-
-	if (LadderObj.PendingRank > LadderObj.DOMRank) {
-		LadderObj.DOMRank = LadderObj.PendingRank;
-		LadderObj.PendingRank = 0;
-	}
-
-	LadderPos = LadderObj.DOMPosition;
-	LadderRank = LadderObj.DOMRank;
-
-	if (LadderObj.DOMRank == 6) {
-		Super.EvaluateMatch(True);
-	} else {
-		Super.EvaluateMatch();
-	}
+	Super.EvaluateMatch();
 }
 
 function CheckOpenCondition() {

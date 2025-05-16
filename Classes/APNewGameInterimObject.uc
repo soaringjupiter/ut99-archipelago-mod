@@ -4,6 +4,7 @@ var string GameWindowType;
 
 function PostBeginPlay() {
 	local LadderInventory LadderObj;
+	local APMapInventory MapInventoryObj;
 	local int EmptySlot, j;
 	
 	EmptySlot = -1;
@@ -37,6 +38,20 @@ function PostBeginPlay() {
 
 	LadderObj.Reset();
 	LadderObj.Slot = EmptySlot; // Find a free slot.
+
+	// Make them a MapInventory.
+	MapInventoryObj = APMapInventory(PlayerPawn(Owner).FindInventoryType(class'APMapInventory'));
+	if (MapInventoryObj == None) {
+		// Make them a MapInventory.
+		MapInventoryObj = Spawn(class'APMapInventory');
+		MapInventoryObj.Reset();
+		Log("Created a new MapInventory.");
+		MapInventoryObj.GiveTo(PlayerPawn(Owner));
+	}
+
+	MapInventoryObj.Reset();
+	Log("Assigned player a MapInventory.");
+
 	class'APManagerWindow'.Default.DOMDoorOpen[EmptySlot] = 0;
 	class'APManagerWindow'.Default.CTFDoorOpen[EmptySlot] = 0;
 	class'APManagerWindow'.Default.ASDoorOpen[EmptySlot] = 0;

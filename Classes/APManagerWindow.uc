@@ -1,61 +1,58 @@
 class APManagerWindow extends ManagerWindow Config(APLadder);
 
-function OpenDoors ()
-{
-	local bool bOneOpened;
+// Background
+var texture BG1[4];
+var texture BG2[4];
+var texture BG3[4];
+var string BGName1[4];
+var string BGName2[4];
+var string BGName3[4];
 
-	if ( LadderObj.DMPosition >= 3 ) {
-		if ( (DOMDoorOpen[LadderObj.Slot] == 0) && (DOMDoor != None) ) {
-			DOMDoorOpen[LadderObj.Slot] = 1;
-			DOMDoor.Open();
-			SaveConfig();
-			bOneOpened = True;
-		}
-	}
+// Deathmatch Ladder
+var NotifyButton DMLadderButton;
+var localized string DMText;
+var DoorArea DMDoor;
 
-	if ( LadderObj.DOMPosition >= 2 ) {
-		if ( (CTFDoorOpen[LadderObj.Slot] == 0) && (CTFDoor != None) ) {
-			CTFDoorOpen[LadderObj.Slot] = 1;
-			CTFDoor.Open();
-			SaveConfig();
-			bOneOpened = True;
-		}
-	}
+// Domination Ladder
+var NotifyButton DOMLadderButton;
+var localized string DOMText;
+var DoorArea DOMDoor;
 
-	if ( LadderObj.CTFPosition >= 3 ) {
-		if ( (ASDoorOpen[LadderObj.Slot] == 0) && (ASDoor != None) ) {
-			ASDoorOpen[LadderObj.Slot] = 1;
-			ASDoor.Open();
-			SaveConfig();
-			bOneOpened = True;
-		}
-	}
+// CTF Ladder
+var NotifyButton CTFLadderButton;
+var localized string CTFText;
+var DoorArea CTFDoor;
 
-	if ((LadderObj.DMRank == 6) && (LadderObj.DOMRank == 6) && (LadderObj.CTFRank == 6) && (LadderObj.ASRank == 6)) {
-		if ( (ChalDoorOpen[LadderObj.Slot] == 0) && (ChalDoor != None) )
-		{
-			ChalDoorOpen[LadderObj.Slot] = 1;
-			ChalDoor.Open();
-			SaveConfig();
-			bOneOpened = True;
-		}
-	}
+// Assault Ladder
+var NotifyButton ASLadderButton;
+var localized string ASText;
+var DoorArea ASDoor;
 
-	if ( (LadderObj.DMRank == 6) || (LadderObj.DOMRank == 6) || (LadderObj.CTFRank == 6) || (LadderObj.ASRank == 6) ) {
-		if ( (TrophyDoorOpen[LadderObj.Slot] == 0) && (TrophyDoor != None) )
-		{
-			TrophyDoorOpen[LadderObj.Slot] = 1;
-			TrophyDoor.Open();
-			SaveConfig();
-			bOneOpened = True;
-		}
-	}
+// Challenge Ladder
+var NotifyButton ChallengeLadderButton;
+var localized string ChallengeText;
+var DoorArea ChalDoor;
+var localized string ChallengeString;
+var localized string ChalPosString;
 
-	if ( bOneOpened ) {
-		GetPlayerOwner().PlaySound(Sound'LadderSounds.ldoorsopen1b',SLOT_Interface);
-	}
-	bOpened = True;
-}
+// Trophy Room
+var NotifyButton TrophyButton;
+var localized string TrophyText;
+var DoorArea TrophyDoor;
+
+var UTFadeTextArea InfoArea;
+
+var NotifyButton BackButton;
+var NotifyButton NextButton;
+
+var int SelectedLadder;
+var string LadderTypes[5];
+
+var LadderInventory LadderObj;
+var APMapInventory MapInventoryObj;
+
+var localized string RankString[4];
+var localized string MatchesString;
 
 function Created() {
 	local float Xs, Ys;
@@ -64,7 +61,7 @@ function Created() {
 	local float XWidth, YHeight, XMod, YMod, XPos, YPos;
 	local color TextColor;
 
-	Super.Created();
+	// Super.Created();
 
 	// Window properties.
 	bLeaveOnScreen = True;
@@ -90,7 +87,7 @@ function Created() {
 
 	// Window components.
 
-// Check ladder object.
+	// Check ladder object.
 	LadderObj = LadderInventory(GetPlayerOwner().FindInventoryType(class'LadderInventory'));
 
 	if (LadderObj == None) {
@@ -98,6 +95,15 @@ function Created() {
 	}
 
 	LadderObj.LastMatchType = 0;
+
+	// Check map inventory object.
+	MapInventoryObj = APMapInventory(GetPlayerOwner().FindInventoryType(class'APMapInventory'));
+
+	if (MapInventoryObj == None) {
+		Log("APManagerWindow: Player has no APMapInventory!! Creating one.");
+        MapInventoryObj = GetPlayerOwner().Spawn( class'APMapInventory' );
+        MapInventoryObj.GiveTo( GetPlayerOwner() );   // attach to the pawn
+	}
 
 	// TDM ladder.
 	XPos = 95.0/1024 * XMod;
@@ -114,6 +120,16 @@ function Created() {
 	DMLadderButton.SetTextColor(TextColor);
 	DMLadderButton.MyFont = class'UTLadderStub'.Static.GetStubClass().Static.GetHugeFont(Root);
 
+	// DM Door.
+	if (!MapInventoryObj.HasAnyUnlocked(0)) {
+		XPos = 83.0/1024 * XMod;
+		YPos = 93.0/768 * YMod;
+		XWidth = 332.0/1024 * XMod;
+		YHeight = 63.0/768 * YMod;
+		DMDoor = DoorArea(CreateWindow(class'DoorArea', XPos, YPos, XWidth, YHeight));
+		DMDoor.bClosed = True;
+	}
+
 	// DOM ladder.
 	XPos = 95.0/1024 * XMod;
 	YPos = 231.0/768 * YMod;
@@ -128,6 +144,16 @@ function Created() {
 	TextColor.B = 0;
 	DOMLadderButton.SetTextColor(TextColor);
 	DOMLadderButton.MyFont = class'UTLadderStub'.Static.GetStubClass().Static.GetHugeFont(Root);
+
+	// DOM Door.
+	if (!MapInventoryObj.HasAnyUnlocked(1)) {
+		XPos = 83.0/1024 * XMod;
+		YPos = 222.0/768 * YMod;
+		XWidth = 332.0/1024 * XMod;
+		YHeight = 63.0/768 * YMod;
+		DOMDoor = DoorArea(CreateWindow(class'DoorArea', XPos, YPos, XWidth, YHeight));
+		DOMDoor.bClosed = True;
+	}
 
 	// CTF ladder.
 	XPos = 95.0/1024 * XMod;
@@ -150,6 +176,16 @@ function Created() {
 	CTFLadderButton.SetTextColor(TextColor);
 	CTFLadderButton.MyFont = class'UTLadderStub'.Static.GetStubClass().Static.GetHugeFont(Root);
 
+	// CTF door.
+	if (!MapInventoryObj.HasAnyUnlocked(2)) {
+		XPos = 83.0/1024 * XMod;
+		YPos = 356.0/768 * YMod;
+		XWidth = 332.0/1024 * XMod;
+		YHeight = 63.0/768 * YMod;
+		CTFDoor = DoorArea(CreateWindow(class'DoorArea', XPos, YPos, XWidth, YHeight));
+		CTFDoor.bClosed = True;
+	}
+
 	// AS Ladder.
 	XPos = 95.0/1024 * XMod;
 	YPos = 497.0/768 * YMod;
@@ -164,6 +200,16 @@ function Created() {
 	TextColor.B = 0;
 	ASLadderButton.SetTextColor(TextColor);
 	ASLadderButton.MyFont = class'UTLadderStub'.Static.GetStubClass().Static.GetHugeFont(Root);
+
+	// AS Door.
+	if (!MapInventoryObj.HasAnyUnlocked(3)) {
+		XPos = 83.0/1024 * XMod;
+		YPos = 488.0/768 * YMod;
+		XWidth = 332.0/1024 * XMod;
+		YHeight = 63.0/768 * YMod;
+		ASDoor = DoorArea(CreateWindow(class'DoorArea', XPos, YPos, XWidth, YHeight));
+		ASDoor.bClosed = True;
+	}
 
 	// Challenge ladder.
 	XPos = 95.0/1024 * XMod;
@@ -180,6 +226,16 @@ function Created() {
 	ChallengeLadderButton.SetTextColor(TextColor);
 	ChallengeLadderButton.MyFont = class'UTLadderStub'.Static.GetStubClass().Static.GetHugeFont(Root);
 
+	// Challenge door.
+	if (!MapInventoryObj.HasAnyUnlocked(4)) {
+		XPos = 83.0/1024 * XMod;
+		YPos = 618.0/768 * YMod;
+		XWidth = 332.0/1024 * XMod;
+		YHeight = 63.0/768 * YMod;
+		ChalDoor = DoorArea(CreateWindow(class'DoorArea', XPos, YPos, XWidth, YHeight));
+		ChalDoor.bClosed = True;
+	}
+
 	// Sala de Trofeos.
 	XPos = 656.0/1024 * XMod;
 	YPos = 63.0/768 * YMod;
@@ -194,16 +250,6 @@ function Created() {
 	TextColor.B = 0;
 	TrophyButton.SetTextColor(TextColor);
 	TrophyButton.MyFont = class'UTLadderStub'.Static.GetStubClass().Static.GetHugeFont(Root);
-
-	// Trophy door.
-	if (TrophyDoorOpen[LadderObj.Slot] == 0) {
-		XPos = 649.0/1024 * XMod;
-		YPos = 57.0/768 * YMod;
-		XWidth = 236.0/1024 * XMod;
-		YHeight = 62.0/768 * YMod;
-		TrophyDoor = DoorArea(CreateWindow(class'DoorArea', XPos, YPos, XWidth, YHeight));
-		TrophyDoor.bClosed = True;
-	}
 
 	// Back button.
 	XPos = 192.0/1024 * XMod;
@@ -473,11 +519,339 @@ function BeforePaint (Canvas C, float X, float Y)
 	InfoArea.MyFont = Class'UTLadderStub'.Static.GetStubClass().Static.GetSmallFont(Root);
 }
 
+function Paint(Canvas C, float X, float Y)
+{
+	local int XOffset, YOffset;
+	local int W, H;
+	local float XWidth, YHeight, XMod, YMod, XPos, YPos;
+
+	class'UTLadderStub'.Static.GetStubClass().Static.SetupWinParams(Self, Root, W, H);
+
+	XMod = 4*W;
+	YMod = 3*H;
+
+	XOffset = (WinWidth - (4 * W)) / 2;
+	YOffset = (WinHeight - (3 * H)) / 2;
+
+	// Background
+	DrawStretchedTexture(C, XOffset + (0 * W), YOffset + (0 * H), W+1, H+1, BG1[0]);
+	DrawStretchedTexture(C, XOffset + (1 * W), YOffset + (0 * H), W+1, H+1, BG1[1]);
+	DrawStretchedTexture(C, XOffset + (2 * W), YOffset + (0 * H), W+1, H+1, BG1[2]);
+	DrawStretchedTexture(C, XOffset + (3 * W), YOffset + (0 * H), W+1, H+1, BG1[3]);
+
+	DrawStretchedTexture(C, XOffset + (0 * W), YOffset + (1 * H), W+1, H+1, BG2[0]);
+	DrawStretchedTexture(C, XOffset + (1 * W), YOffset + (1 * H), W+1, H+1, BG2[1]);
+	DrawStretchedTexture(C, XOffset + (2 * W), YOffset + (1 * H), W+1, H+1, BG2[2]);
+	DrawStretchedTexture(C, XOffset + (3 * W), YOffset + (1 * H), W+1, H+1, BG2[3]);
+		
+	DrawStretchedTexture(C, XOffset + (0 * W), YOffset + (2 * H), W+1, H+1, BG3[0]);
+	DrawStretchedTexture(C, XOffset + (1 * W), YOffset + (2 * H), W+1, H+1, BG3[1]);
+	DrawStretchedTexture(C, XOffset + (2 * W), YOffset + (2 * H), W+1, H+1, BG3[2]);
+	DrawStretchedTexture(C, XOffset + (3 * W), YOffset + (2 * H), W+1, H+1, BG3[3]);
+
+	if (C.ClipX < 512)
+		return;
+
+	if (LadderObj.DMRank == 6)
+	{
+		XPos = 95.0/1024 * XMod;
+		YPos = 102.0/768 * YMod;
+		XWidth = 60.0/1024 * XMod;
+		YHeight = 60.0/1024 * YMod;
+		DrawStretchedTexture(C, XPos, YPos, XWidth, YHeight, texture'TrophyDM');
+	}
+	if (LadderObj.DOMRank == 6)
+	{
+		XPos = 95.0/1024 * XMod;
+		YPos = 231.0/768 * YMod;
+		XWidth = 60.0/1024 * XMod;
+		YHeight = 60.0/1024 * YMod;
+		DrawStretchedTexture(C, XPos, YPos, XWidth, YHeight, texture'TrophyDOM');
+	}
+	if (LadderObj.CTFRank == 6)
+	{
+		XPos = 95.0/1024 * XMod;
+		YPos = 363.0/768 * YMod;
+		XWidth = 60.0/1024 * XMod;
+		YHeight = 60.0/1024 * YMod;
+		DrawStretchedTexture(C, XPos, YPos, XWidth, YHeight, texture'TrophyCTF');
+	}
+	if (LadderObj.ASRank == 6)
+	{
+		XPos = 95.0/1024 * XMod;
+		YPos = 497.0/768 * YMod;
+		XWidth = 60.0/1024 * XMod;
+		YHeight = 60.0/1024 * YMod;
+		DrawStretchedTexture(C, XPos, YPos, XWidth, YHeight, texture'TrophyAS');
+	}
+	if (LadderObj.ChalRank == 6)
+	{
+		XPos = 95.0/1024 * XMod;
+		YPos = 627.0/768 * YMod;
+		XWidth = 60.0/1024 * XMod;
+		YHeight = 60.0/1024 * YMod;
+		DrawStretchedTexture(C, XPos, YPos, XWidth, YHeight, texture'TrophyChal');
+	}
+}
+
+function ShowWindow ()
+{
+	Super(UWindowWindow).ShowWindow();
+	InfoArea.Clear();
+
+	if ( Root.WinWidth < 512 ) {
+		return;
+	}
+
+	InfoArea.AddText(RankString[0] @ Class'Ladder'.Static.GetRank(LadderObj.DMRank));
+	InfoArea.AddText(MatchesString @ string(LadderObj.DMPosition - 1));
+
+	if (LadderObj.DMPosition >= 3) {
+		InfoArea.AddText("");
+		InfoArea.AddText(RankString[1] @ Class'Ladder'.Static.GetRank(LadderObj.DOMRank));
+		InfoArea.AddText(MatchesString @ string(LadderObj.DOMPosition - 1));
+	}
+
+	if (LadderObj.DOMPosition >= 2) {
+		InfoArea.AddText("");
+		InfoArea.AddText(RankString[2] @ Class'Ladder'.Static.GetRank(LadderObj.CTFRank));
+		InfoArea.AddText(MatchesString @ string(LadderObj.CTFPosition - 1));
+	}
+
+	if (LadderObj.CTFPosition >= 3) {
+		InfoArea.AddText("");
+		InfoArea.AddText(RankString[3] @ Class'Ladder'.Static.GetRank(LadderObj.ASRank));
+		InfoArea.AddText(MatchesString @ string(LadderObj.ASPosition - 1));
+	}
+
+	if ((LadderObj.DMRank == 6) && (LadderObj.DOMRank == 6) && (LadderObj.CTFRank == 6) && (LadderObj.ASRank == 6)) {
+		InfoArea.AddText(" ");
+		InfoArea.AddText(ChallengeString);
+		InfoArea.AddText(ChalPosString @ Class'Ladder'.Static.GetRank(LadderObj.ChalRank));
+	}
+}
+
+function Close(optional bool bByParent)
+{
+	Root.Console.bNoDrawWorld = Root.Console.ShowDesktop;
+	Root.Console.bLocked = False;
+	UMenuRootWindow(Root).MenuBar.ShowWindow();
+	LadderObj = None;
+
+	Super.Close(bByParent);
+}
+
+function HideWindow()
+{
+	Root.Console.bBlackOut = False;
+
+	Super.HideWindow();
+}
+
+function Notify(UWindowWindow C, byte E)
+{
+	local Class<UWindowWindow> LadderWindow;
+
+	switch (E)
+	{
+	case DE_Click:
+		switch (C)
+		{
+		case DMLadderButton:
+			Unlite(SelectedLadder);
+			SelectedLadder = 0;
+			Lite(SelectedLadder);
+			break;
+		case DOMLadderButton:
+			Unlite(SelectedLadder);
+			SelectedLadder = 1;
+			Lite(SelectedLadder);
+			break;
+		case CTFLadderButton:
+			Unlite(SelectedLadder);
+			SelectedLadder = 2;
+			Lite(SelectedLadder);
+			break;
+		case ASLadderButton:
+			Unlite(SelectedLadder);
+			SelectedLadder = 3;
+			Lite(SelectedLadder);
+			break;
+		case ChallengeLadderButton:
+			Unlite(SelectedLadder);
+			SelectedLadder = 4;
+			Lite(SelectedLadder);
+			break;
+		case TrophyButton:
+			Root.SetMousePos((Root.WinWidth*Root.GUIScale)/2, (Root.WinHeight*Root.GUIScale)/2);
+			Close();
+			Root.Console.CloseUWindow();
+			GetPlayerOwner().ClientTravel("EOL_Statues.unr?Game=Botpack.TrophyGame", TRAVEL_Absolute, True);			
+			break;
+		case NextButton:
+			LadderWindow = Class<UWindowWindow>(DynamicLoadObject(LadderTypes[SelectedLadder], class'Class'));
+			LadderObj = None;
+			HideWindow();
+			Root.CreateWindow(LadderWindow, 100, 100, 200, 200, Root, True);
+			break;
+		case BackButton:
+			Close();
+			break;
+		}
+		break;
+	case DE_Doubleclick:
+		switch (C)
+		{
+		case DMLadderButton:
+			Unlite(SelectedLadder);
+			SelectedLadder = 0;
+			Lite(SelectedLadder);
+			LadderWindow = Class<UWindowWindow>(DynamicLoadObject(LadderTypes[SelectedLadder], class'Class'));
+			HideWindow();
+			Root.CreateWindow(LadderWindow, 100, 100, 200, 200, Root, True);
+			break;
+		case DOMLadderButton:
+			Unlite(SelectedLadder);
+			SelectedLadder = 1;
+			Lite(SelectedLadder);
+			LadderWindow = Class<UWindowWindow>(DynamicLoadObject(LadderTypes[SelectedLadder], class'Class'));
+			HideWindow();
+			Root.CreateWindow(LadderWindow, 100, 100, 200, 200, Root, True);
+			break;
+		case CTFLadderButton:
+			Unlite(SelectedLadder);
+			SelectedLadder = 2;
+			Lite(SelectedLadder);
+			LadderWindow = Class<UWindowWindow>(DynamicLoadObject(LadderTypes[SelectedLadder], class'Class'));
+			HideWindow();
+			Root.CreateWindow(LadderWindow, 100, 100, 200, 200, Root, True);
+			break;
+		case ASLadderButton:
+			Unlite(SelectedLadder);
+			SelectedLadder = 3;
+			Lite(SelectedLadder);
+			LadderWindow = Class<UWindowWindow>(DynamicLoadObject(LadderTypes[SelectedLadder], class'Class'));
+			HideWindow();
+			Root.CreateWindow(LadderWindow, 100, 100, 200, 200, Root, True);
+			break;
+		case ChallengeLadderButton:
+			Unlite(SelectedLadder);
+			SelectedLadder = 4;
+			Lite(SelectedLadder);
+			LadderWindow = Class<UWindowWindow>(DynamicLoadObject(LadderTypes[SelectedLadder], class'Class'));
+			HideWindow();
+			Root.CreateWindow(LadderWindow, 100, 100, 200, 200, Root, True);
+			break;
+		}
+		break;
+	}
+}
+
+function UnLite(int Ladder)
+{
+	local color UnLiteColor;
+
+	UnLiteColor.R = 255;
+	UnLiteColor.G = 0;
+	UnLiteColor.B = 0;
+
+	switch (Ladder)
+	{
+		case 0:
+			DMLadderButton.SetTextColor(UnLiteColor);
+			break;
+		case 1:
+			DOMLadderButton.SetTextColor(UnLiteColor);
+			break;
+		case 2:
+			CTFLadderButton.SetTextColor(UnLiteColor);
+			break;
+		case 3:
+			ASLadderButton.SetTextColor(UnLiteColor);
+			break;
+		case 4:
+			ChallengeLadderButton.SetTextColor(UnLiteColor);
+			break;
+	}
+}
+
+function Lite(int Ladder)
+{
+	local color LiteColor;
+
+	LiteColor.R = 255;
+	LiteColor.G = 255;
+	LiteColor.B = 0;
+
+	switch (Ladder)
+	{
+		case 0:
+			DMLadderButton.SetTextColor(LiteColor);
+			break;
+		case 1:
+			DOMLadderButton.SetTextColor(LiteColor);
+			break;
+		case 2:
+			CTFLadderButton.SetTextColor(LiteColor);
+			break;
+		case 3:
+			ASLadderButton.SetTextColor(LiteColor);
+			break;
+		case 4:
+			ChallengeLadderButton.SetTextColor(LiteColor);
+			break;
+	}
+}
+
+function SetupLadderButton( NotifyButton B, bool bEnabled )
+{
+    local color Yellow, Red;
+
+    Yellow.R = 255; Yellow.G = 255; Yellow.B = 0;
+    Red   .R = 255; Red   .G =   0; Red   .B = 0;
+
+    if ( bEnabled )
+    {
+        B.bDisabled = False;
+        B.SetTextColor( Yellow );
+    }
+    else
+    {
+        B.bDisabled = True;
+        B.SetTextColor( Red );
+    }
+}
+
 defaultproperties
 {
+    BGName1(0)="UTMenu.Sel11"
+    BGName1(1)="UTMenu.Sel12"
+    BGName1(2)="UTMenu.Sel13"
+    BGName1(3)="UTMenu.Sel14"
+    BGName2(0)="UTMenu.Sel21"
+    BGName2(1)="UTMenu.Sel22"
+    BGName2(2)="UTMenu.Sel23"
+    BGName2(3)="UTMenu.Sel24"
+    BGName3(0)="UTMenu.Sel31"
+    BGName3(1)="UTMenu.Sel32"
+    BGName3(2)="UTMenu.Sel33"
+    BGName3(3)="UTMenu.Sel34"
+    DMText="Deathmatch"
+    DOMText="Domination"
+    CTFText="Capture the Flag"
+    ASText="Assault"
+    ChallengeText="Challenge"
+    ChallengeString="FINAL TOURNAMENT CHALLENGE"
+    ChalPosString="Challenge Rank:"
+    TrophyText="Trophy Room"
 	LadderTypes(0)="Archipelago.APLadderDMMenu"
 	LadderTypes(1)="Archipelago.APLadderDOMMenu"
 	LadderTypes(2)="Archipelago.APLadderCTFMenu"
 	LadderTypes(3)="Archipelago.APLadderASMenu"
 	LadderTypes(4)="Archipelago.APLadderChalMenu"
+    RankString(0)="Deathmatch Rank:"
+    RankString(1)="Domination Rank:"
+    RankString(2)="CTF Rank:"
+    RankString(3)="Assault Rank:"
+    MatchesString="Matches Completed:"
 }

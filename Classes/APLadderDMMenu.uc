@@ -28,6 +28,8 @@ function NextPressed() {
 		return;
 	}
 
+	Super.UpdateLastMatch(SelectedMatch);
+
 	if (SelectedMatch == 0) {
 		MapName = LadderObj.CurrentLadder.Default.MapPrefix$Ladder.Static.GetMap(0);
 		CloseUp();
@@ -58,27 +60,7 @@ function StartMap(string StartMap, int Rung, string GameType) {
 
 function EvaluateMatch(optional bool bTrophyVictory)
 {
-	local int Pos;
-	local string MapName;
-
-	if (LadderObj.PendingPosition > LadderObj.DMPosition) {
-		PendingPos = LadderObj.PendingPosition;
-		LadderObj.DMPosition = LadderObj.PendingPosition;
-	}
-
-	if (LadderObj.PendingRank > LadderObj.DMRank) {
-		LadderObj.DMRank = LadderObj.PendingRank;
-		LadderObj.PendingRank = 0;
-	}
-
-	LadderPos = LadderObj.DMPosition;
-	LadderRank = LadderObj.DMRank;
-
-	if (LadderObj.DMRank == 6) {
-		Super.EvaluateMatch(True);
-	} else {
-		Super.EvaluateMatch();
-	}
+	Super.EvaluateMatch();
 }
 
 function CheckOpenCondition() {
@@ -90,6 +72,6 @@ defaultproperties {
     TrophyMap="EOL_DeathMatch.unr"
     LadderName="Deathmatch"
 	Ladder=Class'APLadderDM'
-    GOTYLadder=Class'APLadderDMGOTY'
+    // GOTYLadder=Class'APLadderDMGOTY'
 	LadderTrophy=Texture'UTMenu.Skins.TrophyDM'
 }
