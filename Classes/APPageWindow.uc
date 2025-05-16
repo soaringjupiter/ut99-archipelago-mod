@@ -92,7 +92,7 @@ function InitConsole()
     UTConsole(GetPlayerOwner().Player.Console).UTLadderCTFClass="Archipelago.APLadderCTFMenu";
     UTConsole(GetPlayerOwner().Player.Console).UTLadderDOMClass="Archipelago.APLadderDOMMenu";
     UTConsole(GetPlayerOwner().Player.Console).UTLadderASClass="Archipelago.APLadderASMenu";
-    UTConsole(GetPlayerOwner().Player.Console).UTLadderChalClass="Archipelago.APMenuLadderChal";
+    UTConsole(GetPlayerOwner().Player.Console).UTLadderChalClass="Archipelago.APLadderChalMenu";
     UTConsole(GetPlayerOwner().Player.Console).InterimObjectType="Archipelago.APNewGameInterimObject";
     UTConsole(GetPlayerOwner().Player.Console).SlotWindowType="Archipelago.APSlotWindow";
 }
