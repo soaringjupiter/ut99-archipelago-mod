@@ -43,6 +43,8 @@ static function SendBeat( Actor Owner, string MapName )
     local APHttpLinkConnector B;
     local string Enc;
 
+    Log( "sending beat for " $ MapName );
+
     Enc = URLEncode( MapName );
 
     B = Owner.Spawn( class'APHttpLinkConnector' );
@@ -64,13 +66,13 @@ function StartGet( string HostName, int PortNum, string Path )
     CurrentPath   = Path;
     ConnectTimer  = 0.f;
 
-    Log( Name $ ": Resolve → " $ HostName $ CurrentPath );
+    Log( Name $ ": Resolve -> " $ HostName $ CurrentPath );
     Resolve( HostName );
 }
 
 event Resolved( IpAddr Ip )
 {
-    Log( Name $ ": Resolved ⇒ "$ Ip.Addr );
+    Log( Name $ ": Resolved => "$ Ip.Addr );
     if ( Ip.Addr == 0 )
     {
         Log( Name $ ": DNS failed for " $ BridgeHost, 'ScriptWarning' );
@@ -194,7 +196,7 @@ function BroadcastChat( string Msg )
         if ( P.IsA('PlayerPawn') )
             PlayerPawn(P).ClientMessage( Msg, 'Say', True );
 }
-                                          */
+
 function HandleUnlock( string MapShortName )
 {
     local Pawn P;

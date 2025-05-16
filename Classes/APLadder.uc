@@ -11,11 +11,13 @@ function Created() {
 	}
 }
 
+function UpdateLastMatch(int SelectedMatch) {
+	MapInventoryObj.UpdateLastMatch(SelectedMatch);
+}
+
 function EvaluateMatch(optional bool bTrophyVictory) {
 	local string SaveString;
 	local int Team, i;
-
-	Log("EvaluateMatch: " $ LadderObj.CurrentLadder $ " " $ LadderPos - 1);
 
 	if ( MapInventoryObj == None ) {
 		Log("EvaluateMatch: Player has no APMapInventory!! Creating one.");
@@ -23,16 +25,13 @@ function EvaluateMatch(optional bool bTrophyVictory) {
         MapInventoryObj.GiveTo( GetPlayerOwner() );   // attach to the pawn
 	}
 
+	Log("EvaluateMatch: " $ LadderObj.CurrentLadder $ " " $ MapInventoryObj.LastMatch);
+
 	if ( MapInventoryObj != None )
 	{
-		Log("EvaluateMatch: " $ LadderObj.CurrentLadder $ " " $ LadderPos - 1);
-
-		if ( !MapInventoryObj.IsCompleted( LadderObj.CurrentLadder, LadderPos - 1 ) )
-		{
-			Log("EvaluateMatch: MarkCompleted " $ LadderObj.CurrentLadder $ " " $ LadderPos - 1);
-			MapInventoryObj.MarkCompleted( LadderObj.CurrentLadder, LadderPos - 1 );
-			MapInventoryObj.NotifyBeat   ( LadderObj.CurrentLadder, LadderPos - 1 );
-		}
+		Log("EvaluateMatch: MarkCompleted " $ LadderObj.CurrentLadder $ " " $ MapInventoryObj.LastMatch);
+		MapInventoryObj.MarkCompleted( LadderObj.CurrentLadder, MapInventoryObj.LastMatch );
+		MapInventoryObj.NotifyBeat   ( LadderObj.CurrentLadder, MapInventoryObj.LastMatch );
 	}
 
 	if (LadderObj != None) {
@@ -72,9 +71,9 @@ function EvaluateMatch(optional bool bTrophyVictory) {
 			bTrophyTravelPending = True;
 		}
 
-		SelectedMatch = LadderPos;
-		SetMapShot(LadderPos);
-		FillInfoArea(LadderPos);
+		SelectedMatch = MapInventoryObj.LastMatch;
+		SetMapShot(MapInventoryObj.LastMatch);
+		FillInfoArea(MapInventoryObj.LastMatch);
 	}
 }
 
@@ -88,6 +87,7 @@ function BeforePaint(Canvas C, float X, float Y)
 	local int i;
 	local int W, H;
 	local float XWidth, YHeight, XMod, YMod, XPos, YPos, YOffset;
+	local color Grey;
 
 	Super.BeforePaint(C, X, Y);
 
@@ -210,10 +210,20 @@ function BeforePaint(Canvas C, float X, float Y)
 		{
 			if ( MapInventoryObj.IsUnlocked( LadderObj.CurrentLadder, i ) )
 			{
+				LadderPos = i;
 				Matches[i].bDisabled = False;
 				Matches[i].bUnknown  = False;
 				Matches[i].UpTexture = Matches[i].OtherTexture;
 				Matches[i].OverTexture= Matches[i].OtherTexture;
+				Log("EvaluateMatch: Match " $ i $ " is unlocked");
+				Log("EvaluateMatch: IsCompleted: " $ MapInventoryObj.IsCompleted( LadderObj.CurrentLadder, i ) );
+				if (MapInventoryObj.IsCompleted( LadderObj.CurrentLadder, i ))
+				{
+					Grey.R = 128;
+					Grey.G = 128;
+					Grey.B = 128;
+					Matches[i].SetTextColor(Grey);
+				}
 			}
 			else
 			{

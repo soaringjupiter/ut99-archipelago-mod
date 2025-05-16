@@ -1,5 +1,7 @@
 class APLadderCTFMenu extends APLadder;
 
+var int LastMatch;
+
 function Created() {
 	Super.Created();
 
@@ -27,6 +29,8 @@ function NextPressed() {
 		return;
 	}
 
+	Super.UpdateLastMatch(SelectedMatch);
+
 	if (SelectedMatch == 0) {
 		MapName = LadderObj.CurrentLadder.Default.MapPrefix$Ladder.Static.GetMap(0);
 		CloseUp();
@@ -47,27 +51,7 @@ function NextPressed() {
 }
 
 function EvaluateMatch(optional bool bTrophyVictory) {
-	if (LadderObj.PendingPosition > LadderObj.CTFPosition) {
-		if (class'UTLadderStub'.Static.IsDemo() && LadderObj.PendingPosition > 1) {
-			PendingPos = 1;
-		} else {
-			PendingPos = LadderObj.PendingPosition;
-			LadderObj.CTFPosition = LadderObj.PendingPosition;
-		}
-	}
-	if (LadderObj.PendingRank > LadderObj.CTFRank) {
-		LadderObj.CTFRank = LadderObj.PendingRank;
-		LadderObj.PendingRank = 0;
-	}
-
-	LadderPos = LadderObj.CTFPosition;
-	LadderRank = LadderObj.CTFRank;
-
-	if (LadderObj.CTFRank == 6) {
-		Super.EvaluateMatch(True);
-	} else {
-		Super.EvaluateMatch();
-	}
+	Super.EvaluateMatch();
 }
 
 function CheckOpenCondition() {

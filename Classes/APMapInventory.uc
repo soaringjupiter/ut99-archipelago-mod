@@ -1,41 +1,51 @@
 class APMapInventory extends Inventory config(APLadder);
 
-// ---------------  RANDOM-MAP CAMPAIGN  ---------------
-var travel int UnlockedMask[5]; // DM, DOM, CTF, AS, CHAL  (keep order!)
+var travel int UnlockedMask[5];
 var travel int CompletedMask[5];
 var config int SavedUnlocked[5];
 var config int SavedCompleted[5];
 
-var const string DMNames[16] ; // Oblivion … Peak
-var const string DOMNames[9] ; // Condemned … MetalDream
-var const string CTFNames[11]; // Niven … Orbital
-var const string ASNames[6]  ; // Frigate … Overlord
-var const string ChalNames[4]  ; // Phobos … HyperBlast
+var const string DMNames[16];
+var const string DOMNames[9];
+var const string CTFNames[11];
+var const string ASNames[6];
+var const string ChalNames[4];
 
 var transient APHttpLinkConnector Bridge;
-var const     int BridgePort; // keep in sync with Python
+var const     int BridgePort;
+
+var config int LastMatch;
 
 function string NameFor( int LadderIdx, int MapIdx )
 {
     switch ( LadderIdx )
     {
-        case 0: return "DM-"  $ DMNames [MapIdx];
-        case 1: return "DOM-" $ DOMNames[MapIdx];
-        case 2: return "CTF-" $ CTFNames[MapIdx];
-        case 3: return "AS-"  $ ASNames [MapIdx];
-        default: return "DM-" $ ChalNames[MapIdx];  // challenge uses DM prefix
+        case 0: return "DM-"  $ DMNames [MapIdx - 1];
+        case 1: return "DOM-" $ DOMNames[MapIdx - 1];
+        case 2: return "CTF-" $ CTFNames[MapIdx - 1];
+        case 3: return "AS-"  $ ASNames [MapIdx - 1];
+        default: return "DM-" $ ChalNames[MapIdx - 1];
     }
+}
+
+function UpdateLastMatch( int SelectedMatch )
+{
+    Log("UpdateLastMatch: " $ SelectedMatch);
+    LastMatch = SelectedMatch;
+    Log("MapInventoryObj.LastMatch: " $ LastMatch);
+    SaveConfig();
+
 }
 
 function UnlockByShortName( string Short )
 {
     local int LadderIdx, MapIdx;
 
-    Log( "UnlockByShortName: " $ Short );
+    // Log( "UnlockByShortName: " $ Short );
 
     if ( ParseShortName( Short, LadderIdx, MapIdx ) )
     {
-        Log( "UnlockByShortName: " $ LadderIdx $ " " $ MapIdx );
+        // Log( "UnlockByShortName: " $ LadderIdx $ " " $ MapIdx );
         switch ( LadderIdx )
         {
             case 0: UnlockMap( class'APLadderDM',  MapIdx ); break;
@@ -51,11 +61,11 @@ function NotifyBeat( class<Ladder> L, int MapIdx )
 {
     switch ( GetLadderIndex(L) )
     {
-        case 0: class'APHttpLinkConnector'.static.SendBeat( Self, DMNames [MapIdx] ); break;
-        case 1: class'APHttpLinkConnector'.static.SendBeat( Self, DOMNames[MapIdx] ); break;
-        case 2: class'APHttpLinkConnector'.static.SendBeat( Self, CTFNames[MapIdx] ); break;
-        case 3: class'APHttpLinkConnector'.static.SendBeat( Self, ASNames [MapIdx] ); break;
-        default: class'APHttpLinkConnector'.static.SendBeat( Self, ChalNames[MapIdx] ); break;
+        case 0: class'APHttpLinkConnector'.static.SendBeat( Self, DMNames [MapIdx - 1] ); Log("Beat DM " $ DMNames [MapIdx - 1]); break;
+        case 1: class'APHttpLinkConnector'.static.SendBeat( Self, DOMNames[MapIdx - 1] ); Log("Beat DOM " $ DOMNames[MapIdx - 1]); break;
+        case 2: class'APHttpLinkConnector'.static.SendBeat( Self, CTFNames[MapIdx - 1] ); Log("Beat CTF " $ CTFNames[MapIdx - 1]); break;
+        case 3: class'APHttpLinkConnector'.static.SendBeat( Self, ASNames [MapIdx - 1] ); Log("Beat AS " $ ASNames [MapIdx - 1]); break;
+        default: class'APHttpLinkConnector'.static.SendBeat( Self, ChalNames[MapIdx - 1] ); Log("Beat Chal " $ ChalNames[MapIdx - 1]); break;
     }
     
 }
@@ -114,7 +124,7 @@ static function int GetLadderIndex( class<Ladder> L )
 	if (L == class'APLadderDOM')      return 1;
 	if (L == class'APLadderCTF')      return 2;
 	if (L == class'APLadderAS')       return 3;
-	return 4; // Challenge
+	return 4;
 }
 
 function bool IsUnlocked( class<Ladder> L, int Map )
@@ -168,7 +178,6 @@ function PostBeginPlay()
 
     Super.PostBeginPlay();
 
-	 // create the long-poll connector once
     if ( Bridge == None )
         Bridge = class'APHttpLinkConnector'.static.Launch( Self );
 
