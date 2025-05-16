@@ -18,6 +18,8 @@ defaultproperties
      Maps(7)="Command.unr"
      Maps(8)="LavaGiant.unr"
      Maps(9)="November.unr"
+     Maps(10)="Hydro16.unr"
+     Maps(11)="Orbital.unr"
      MapAuthors(0)="Cliff Bleszinski"
      MapAuthors(1)="Alan Willard 'Talisman'"
      MapAuthors(2)="Cedric 'Inoxx' Fiorentino"
@@ -28,6 +30,8 @@ defaultproperties
      MapAuthors(7)="Myscha the sled dog"
      MapAuthors(8)="Juan Pancho Eekels"
      MapAuthors(9)="Myscha the sled dog"
+     MapAuthors(10)="Sidney "
+     MapAuthors(11)="Dave Ewing"
      MapTitle(0)="CTF Tutorial"
      MapTitle(1)="Niven"
      MapTitle(2)="Facing Worlds"
@@ -38,6 +42,8 @@ defaultproperties
      MapTitle(7)="Last Command"
      MapTitle(8)="The Lava Giant"
      MapTitle(9)="November Sub Pen"
+     MapTitle(10)="Hydro"
+     MapTitle(11)="Orbital"
      MapDescription(0)="Learn the basic rules and systems of Capture the Flag in this special training environment. Test your skills against an untrained enemy team before entering the tournament proper."
      MapDescription(1)="An experimental orbital nuclear reactor, abandoned after funding for the project dried up. High radiation levels and waste leakage offer an environmental challenge for Tournament combatants."
      MapDescription(2)="This ancient asteroid has been converted to an Arena for the Tournament. It is highly dangerous due to aberrant gravitational properties and, of course, the snipers from the other team."
@@ -48,6 +54,8 @@ defaultproperties
      MapDescription(7)="The Last Command is a fully functional Nuclear Processing Station owned by the Liandri Corporation. This facility's system oriented layout makes an ideal proving grounds for Capture the Flag Tournament matches. High Tech voluminous industrial architecture paired with curving maintenance corridors means fighting here will require quick reaction times if your team plans on surviving."
      MapDescription(8)="This volatile world has an extremely low orbit around a superdense gas giant. The resulting gravitational forces have caused the planetary mantle to collapse. Combatants are issued special gravbelts for each match."
      MapDescription(9)="Battle around a retired November class nuclear submarine docked in an underground pen. This relic, left from the First Cold War, still includes machinegun nests and defensive positions key to victory."
+     MapDescription(10)="This enormous hydroelectric plant used to power the colonies on Vesuvius 9 until a mysterious virus killed everyone off.  Now that a few years have passed, Liandri official have declared the plant safe for combat (safe is relative to Liandri officials)."
+     MapDescription(11)="The interior of this dual-sided space station may appear complete, but much functionality was never completed when funding ran out due to corrupt contractors and irresponsible administrators.  As usual, the savvy Liandri location scouts caught wind of this and picked the station up at a discount for inclusion in the tourney."
      RankedGame(0)=1
      RankedGame(1)=1
      RankedGame(2)=2
@@ -57,7 +65,9 @@ defaultproperties
      RankedGame(6)=4
      RankedGame(7)=4
      RankedGame(8)=5
-     RankedGame(9)=6
+     RankedGame(9)=5
+     RankedGame(10)=5
+     RankedGame(11)=6
      GoalTeamScore(1)=3
      GoalTeamScore(2)=3
      GoalTeamScore(3)=3
@@ -67,6 +77,8 @@ defaultproperties
      GoalTeamScore(7)=3
      GoalTeamScore(8)=3
      GoalTeamScore(9)=3
+     GoalTeamScore(10)=3
+     GoalTeamScore(11)=3
      MatchInfo(0)="Archipelago.APRatedMatchCTFTUT"
      MatchInfo(1)="Archipelago.APRatedMatchCTF1"
      MatchInfo(2)="Archipelago.APRatedMatchCTF3"
@@ -77,4 +89,6 @@ defaultproperties
      MatchInfo(7)="Archipelago.APRatedMatchCTF7"
      MatchInfo(8)="Archipelago.APRatedMatchCTF8"
      MatchInfo(9)="Archipelago.APRatedMatchCTF9"
+     MatchInfo(10)="Archipelago.APRatedMatchCTF10"
+     MatchInfo(11)="Archipelago.APRatedMatchCTF11"
 }

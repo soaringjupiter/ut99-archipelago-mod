@@ -5,7 +5,7 @@ var travel int CompletedMask[5];
 var config int SavedUnlocked[5];
 var config int SavedCompleted[5];
 
-var const string DMNames[16];
+var const string DMNames[15];
 var const string DOMNames[9];
 var const string CTFNames[11];
 var const string ASNames[6];
@@ -231,11 +231,10 @@ defaultproperties
     DMNames(8)="DM-Malevolence"
     DMNames(9)="DM-KGalleon"
     DMNames(10)="DM-Tempest"
-    DMNames(11)="DM-Barricade"
-    DMNames(12)="DM-Shrapnel]["
-    DMNames(13)="DM-Liandri"
-    DMNames(14)="DM-Conveyor"
-    DMNames(15)="DM-Peak"
+    DMNames(11)="DM-Shrapnel]["
+    DMNames(12)="DM-Liandri"
+    DMNames(13)="DM-Conveyor"
+    DMNames(14)="DM-Peak"
 
     DOMNames(0)="DOM-Condemned"
     DOMNames(1)="DOM-Ghardhen"
