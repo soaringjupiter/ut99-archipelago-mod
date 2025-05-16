@@ -5,7 +5,7 @@ class APLadderCTF extends LadderCTF;
 
 defaultproperties
 {
-     Matches=10
+     Matches=12
      bTeamGame=True
      MapPrefix="CTF-"
      Maps(0)="Tutorial.unr"

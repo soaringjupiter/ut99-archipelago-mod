@@ -24,7 +24,7 @@ function string NameFor( int LadderIdx, int MapIdx )
         case 1: return "DOM-" $ DOMNames[MapIdx - 1];
         case 2: return "CTF-" $ CTFNames[MapIdx - 1];
         case 3: return "AS-"  $ ASNames [MapIdx - 1];
-        default: return "DM-" $ ChalNames[MapIdx - 1];
+        default: return "DM-" $ ChalNames[MapIdx];
     }
 }
 
@@ -65,7 +65,7 @@ function NotifyBeat( class<Ladder> L, int MapIdx )
         case 1: class'APHttpLinkConnector'.static.SendBeat( Self, DOMNames[MapIdx - 1] ); Log("Beat DOM " $ DOMNames[MapIdx - 1]); break;
         case 2: class'APHttpLinkConnector'.static.SendBeat( Self, CTFNames[MapIdx - 1] ); Log("Beat CTF " $ CTFNames[MapIdx - 1]); break;
         case 3: class'APHttpLinkConnector'.static.SendBeat( Self, ASNames [MapIdx - 1] ); Log("Beat AS " $ ASNames [MapIdx - 1]); break;
-        default: class'APHttpLinkConnector'.static.SendBeat( Self, ChalNames[MapIdx - 1] ); Log("Beat Chal " $ ChalNames[MapIdx - 1]); break;
+        default: class'APHttpLinkConnector'.static.SendBeat( Self, ChalNames[MapIdx] ); Log("Beat Chal " $ ChalNames[MapIdx]); break;
     }
     
 }
@@ -79,7 +79,7 @@ function bool ParseShortName( string Short, out int Ladder, out int Map )
         switch ( LadderI )
         {
             case 0:
-                for ( MapI=0 ; MapI<16 ; ++MapI )
+                for ( MapI=0 ; MapI<15 ; ++MapI )
                     if ( DMNames[MapI] == Short )
                     {
                         Ladder = LadderI; Map = MapI + 1; return True;
@@ -247,7 +247,7 @@ defaultproperties
     DOMNames(8)="DOM-MetalDream"
 
     CTFNames(0)="CTF-Niven"
-    CTFNames(1)="CTF-Facing Worlds"
+    CTFNames(1)="CTF-Face"
     CTFNames(2)="CTF-EternalCave"
     CTFNames(3)="CTF-Coret"
     CTFNames(4)="CTF-Gauntlet"
