@@ -3,234 +3,210 @@ class APHttpLinkConnector extends IpDrv.TcpLink
 
 var config string BridgeHost;
 var config int    BridgePort;
-
 var config float  ConnectTimeout;
 
-var        string  CurrentPath;      // "/poll"  or "/beat?m=…"
-var        bool    bReadingBody;
-var        string  BodyLines;
-var        float   ConnectTimer;
+var bool bIsConnected;
+var string PendingSendQueue[16]; // Simple queue for messages if not connected
+var int PendingSendCount;
 
-static function APHttpLinkConnector Launch( Actor Owner )
+// Persistent connector singleton per level
+static function APHttpLinkConnector Launch(Actor Owner)
 {
     local APHttpLinkConnector H;
-    H = Owner.Spawn( class'APHttpLinkConnector' );
-    if ( H != None )
-        H.StartPoll();
+    // Try to find an existing connector
+    foreach Owner.AllActors(class'APHttpLinkConnector', H)
+        if (H != None && H.bIsConnected)
+            return H;
+    // Otherwise, spawn a new one
+    H = Owner.Spawn(class'APHttpLinkConnector');
+    if (H != None)
+        H.Connect();
     return H;
 }
 
-static function string URLEncode(string S)
+function Connect()
 {
-    local int i, L;
-    local string Out;
-    local byte C;
-
-    L = Len(S);
-    for (i = 0; i <= L; i++)
+    local IpAddr Addr;
+    if (!StringToIpAddr(BridgeHost, Addr))
     {
-        C = Asc( Mid(S, i, 1) );
-        if (C == 32)               // space
-            Out = Out $ "%20";
-        else
-            Out = Out $ Chr(C);
-    }
-    return Out;
-}
-
-static function SendBeat( Actor Owner, string MapName )
-{
-    local APHttpLinkConnector B;
-    local string Enc;
-
-    Log( "sending beat for " $ MapName );
-
-    Enc = URLEncode( MapName );
-
-    B = Owner.Spawn( class'APHttpLinkConnector' );
-    if ( B != None )
-        B.StartGet( default.BridgeHost, default.BridgePort,
-                    "/beat?m="$ Enc );
-}
-
-function StartPoll()
-{
-    Log( Name $ ": opening /poll to " $ BridgeHost $ ":" $ BridgePort );
-    StartGet( BridgeHost, BridgePort, "/poll" );
-}
-
-function StartGet( string HostName, int PortNum, string Path )
-{
-    bReadingBody  = False;
-    BodyLines     = "";
-    CurrentPath   = Path;
-    ConnectTimer  = 0.f;
-
-    Log( Name $ ": Resolve -> " $ HostName $ CurrentPath );
-    Resolve( HostName );
-}
-
-event Resolved( IpAddr Ip )
-{
-    Log( Name $ ": Resolved => "$ Ip.Addr );
-    if ( Ip.Addr == 0 )
-    {
-        Log( Name $ ": DNS failed for " $ BridgeHost, 'ScriptWarning' );
-        RetryLater();
+        Log("AP bridge: Invalid BridgeHost: " $ BridgeHost, 'ScriptWarning');
         return;
     }
-
-    if ( BindPort( 0, False ) != -1 )
-    {
-        Ip.Port = BridgePort;
-        Open( Ip );
-    }
-    else
-    {
-        Log( Name $ ": BindPort() failed", 'ScriptWarning' );
-        RetryLater();
-    }
-}
-
-event Tick( float Delta )
-{
+    Addr.Port = BridgePort;
+    BindPort(0, false);
+    Open(Addr);
 }
 
 event Opened()
 {
-    local string Req;
-
-    Req = "GET "    $ CurrentPath $ " HTTP/1.1" $ Chr(13)$Chr(10)
-        $ "Host: "  $ BridgeHost   $ Chr(13)$Chr(10)
-        $ "Connection: close"      $ Chr(13)$Chr(10)
-        $ Chr(13)$Chr(10);
-
-    Log( Name $ ": connected, sending GET " $ CurrentPath );
-
-    SendText( Req );
-}
-
-event ReceivedText(string Text)
-{
-    local int i;
-    Log("HTTP(chunk)>> " $ Text);
-    i = InStr(Text, Chr(13)$Chr(10) $ Chr(13)$Chr(10));
-    if ( i > 0 )
-    {
-        BodyLines = Mid( Text, i + 4 );
-        bReadingBody = True;
-    }
+    bIsConnected = true;
+    Log("AP bridge connected!");
+    // Send any queued messages
+    FlushPendingSends();
+    // Request all current unlocks
+    SendJSON("{\"action\": \"poll\"}");
 }
 
 event Closed()
 {
-    Log( Name $ ": closed (" $ CurrentPath $ ")" );
+    bIsConnected = false;
+    Log("AP bridge closed, will retry...");
+    SetTimer(3, false); // Try to reconnect after 3 seconds
+}
 
-    if ( bReadingBody && BodyLines != "" ) {
-        Log( Name $ ": body: " $ BodyLines );
-        ProcessBody();
+event Timer()
+{
+    Connect();
+}
+
+event ReceivedText(string Text)
+{
+    // Handle each line (may receive multiple lines at once)
+    local int i, j, length;
+    local string Line, NewLine;
+
+    NewLine = Chr(13) $ Chr(10);
+    length = Len(Text);
+    i = 0;
+    while (i < length)
+    {
+        j = InStr(Mid(Text, i), NewLine);
+        if (j == -1)
+        {
+            Line = Mid(Text, i);
+            i = length;
+        }
+        else
+        {
+            Line = Left(Mid(Text, i), j);
+            i = i + j + 1;
+        }
+        HandleJSONLine(Line);
     }
+}
 
-    if ( CurrentPath == "/poll" ) {
-        SetTimer( 2, False );
+function HandleJSONLine(string Line)
+{
+    // Very basic JSON parsing for known message types
+    if (InStr(Line, "\"action\": \"unlock\"") != -1)
+    {
+        HandleUnlock(ParseJSONValue(Line, "map"));
+    }
+    else if (InStr(Line, "\"action\": \"chat\"") != -1)
+    {
+        BroadcastChat(ParseJSONValue(Line, "msg"));
+    }
+    else if (InStr(Line, "\"action\": \"error\"") != -1)
+    {
+        Log("AP bridge error: " $ ParseJSONValue(Line, "msg"));
+    }
+    // Add more actions as needed
+}
+
+function string ParseJSONValue(string Line, string Key)
+{
+    // Extracts the value for a given key from a flat JSON object (no nested objects)
+    local int k, v, q1, q2;
+    local string Search, Value, Quote;
+    Quote = Chr(34);
+    Search = Quote $ Key $ Quote $ ":";
+    k = InStr(Line, Search);
+    if (k == -1)
+        return "";
+    v = k + Len(Search);
+    // Skip whitespace
+    while (Mid(Line, v, 1) == " " || Mid(Line, v, 1) == "\t")
+        v++;
+    if (Mid(Line, v, 1) == Quote)
+    {
+        q1 = v + 1;
+        q2 = InStr(Mid(Line, q1), Quote);
+        if (q2 != -1)
+            Value = Left(Mid(Line, q1), q2);
+        else
+            Value = Mid(Line, q1);
     }
     else
-        Destroy();
+    {
+        // Not a quoted value
+        q2 = InStr(Mid(Line, v), ",");
+        if (q2 == -1)
+            Value = Mid(Line, v);
+        else
+            Value = Left(Mid(Line, v), q2);
+    }
+    Log("AP bridge: Parsed value for " $ Key $ ": " $ Value);
+    return Value;
 }
-function ProcessBody()
+
+function BroadcastChat(string Msg)
+{
+    local Pawn P;
+    for (P = Level.PawnList; P != None; P = P.NextPawn)
+        if (P.IsA('PlayerPawn'))
+            PlayerPawn(P).ClientMessage(Msg, 'Say', true);
+}
+
+function HandleUnlock(string MapShortName)
+{
+    local Inventory Inv;
+    Inv = Level.PawnList.Inventory;
+    while (Inv != None)
+    {
+        Log("AP bridge: Handling unlock for " $ MapShortName);
+        if (Inv.IsA('APMapInventory'))
+        {
+            APMapInventory(Inv).UnlockByShortName(MapShortName);
+            return;
+        }
+        Inv = Inv.Inventory;
+    }
+}
+
+function SendJSON(string Msg)
+{
+    local string NewLine;
+    NewLine = Chr(13) $ Chr(10);
+    if (bIsConnected)
+    {
+        Log("AP bridge sending: " $ Msg);
+        SendText(Msg $ NewLine);
+    }
+    else if (PendingSendCount < 16)
+    {
+        PendingSendQueue[PendingSendCount++] = Msg;
+        Log("AP bridge not connected, queued: " $ Msg);
+    }
+    else
+    {
+        Log("AP bridge send queue full, dropping: " $ Msg);
+    }
+}
+
+function FlushPendingSends()
 {
     local int i;
-    local string L;
-    i = InStr( BodyLines, Chr(10) );
-    if ( i == -1 )
-    {
-        // handle only one map unlock
-        if ( BodyLines != "" )
-        {
-            Log( Name $ ": body line: " $ BodyLines );
-            if ( Left( BodyLines, 5 ) ~= "chat " )
-                BroadcastChat( Mid( BodyLines, 5 ) );
-            else if ( Left( BodyLines, 7 ) ~= "unlock " )
-                HandleUnlock( Mid( BodyLines, 7 ) );
-            else
-                Log( Name $ ": unknown bridge command: "$ BodyLines );
-        }
-    }
-    else
-    {
-        while ( i > 0 )
-        {
-            Log( Name $ ": i: " $ i );
-            L = Left( BodyLines, i);
-            BodyLines = Mid( BodyLines, i + 1 );
-            Log( Name $ ": body line: " $ L );
-            if ( Left( L, 5 ) ~= "chat " )
-                BroadcastChat( Mid( L, 5 ) );
-            else if ( Left( L, 7 ) ~= "unlock " )
-                HandleUnlock( Mid( L, 7 ) );
-            else
-                Log( Name $ ": unknown bridge command: "$ L );
-            i = InStr( BodyLines, Chr(10) );
-            if ( i == -1 ) {
-                // handle the last line
-                if ( BodyLines != "" )
-                {
-                    Log( Name $ ": body line: " $ BodyLines );
-                    if ( Left( BodyLines, 5 ) ~= "chat " )
-                        BroadcastChat( Mid( BodyLines, 5 ) );
-                    else if ( Left( BodyLines, 7 ) ~= "unlock " )
-                        HandleUnlock( Mid( BodyLines, 7 ) );
-                    else
-                        Log( Name $ ": unknown bridge command: "$ BodyLines );
-                }
-            }
-        }
-    }
-    
+    local string NewLine;
+    NewLine = Chr(13) $ Chr(10);
+    for (i = 0; i < PendingSendCount; ++i)
+        SendText(PendingSendQueue[i] $ NewLine);
+    PendingSendCount = 0;
 }
 
-function BroadcastChat( string Msg )
+static function SendBeat(Actor Owner, string MapName)
 {
-    local Pawn P;
-    for ( P=Level.PawnList ; P!=None ; P=P.NextPawn )
-        if ( P.IsA('PlayerPawn') )
-            PlayerPawn(P).ClientMessage( Msg, 'Say', True );
-}
-
-function HandleUnlock( string MapShortName )
-{
-    local Pawn P;
-    Log( Name $ ": unlock -> " $ MapShortName );
-    for ( P=Level.PawnList ; P!=None ; P=P.NextPawn )
-        if ( P.IsA('PlayerPawn') )
-        {
-            Log( Name $ ": unlock for " $ PlayerPawn(P).PlayerReplicationInfo.PlayerName );
-            APMapInventory(PlayerPawn(P).FindInventoryType( class'APMapInventory' ))
-                .UnlockByShortName( MapShortName );
-        }
-}
-
-function RetryLater()
-{
-    Log( Name $ ": retrying in " $ 2 $ " seconds" );
-    // wait a few seconds, then try to re-establish /poll
-    if ( CurrentPath == "/poll" ) {
-        SetTimer( 2, False );
-    }
-    else
-        Destroy();
-}
-
-function Timer()
-{
-    StartPoll();
+    local APHttpLinkConnector Bridge;
+    Bridge = Launch(Owner);
+    if (Bridge != None)
+        Bridge.SendJSON("{\"action\": \"beat\", \"map\": \"" $ MapName $ "\"}");
 }
 
 defaultproperties
 {
-    BridgeHost   = "127.0.0.1"
-    BridgePort   = 8787
-    ConnectTimeout = 5.0
-
-    bAlwaysTick  = True
+    BridgeHost="127.0.0.1"
+    BridgePort=8787
+    ConnectTimeout=5.0
+    bAlwaysTick=True
 }
+
+
