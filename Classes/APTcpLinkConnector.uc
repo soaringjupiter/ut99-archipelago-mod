@@ -14,6 +14,8 @@ var string CheckedLocationsBuffer;
 static function APTcpLinkConnector Launch(Actor Owner)
 {
     local APTcpLinkConnector H;
+    local APChatMonitor ChatMon;
+
     // Try to find an existing connector
     foreach Owner.AllActors(class'APTcpLinkConnector', H)
         if (H != None && H.bIsConnected)
@@ -22,6 +24,11 @@ static function APTcpLinkConnector Launch(Actor Owner)
     H = Owner.Spawn(class'APTcpLinkConnector');
     if (H != None)
         H.Connect();
+    // Ensure APChatMonitor exists
+    foreach Owner.AllActors(class'APChatMonitor', ChatMon)
+        if (ChatMon != None)
+            return H;
+    Owner.Spawn(class'APChatMonitor');
     return H;
 }
 
