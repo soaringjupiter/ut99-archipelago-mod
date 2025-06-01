@@ -157,7 +157,7 @@ function BroadcastChat(string Msg)
     local Pawn P;
     for (P = Level.PawnList; P != None; P = P.NextPawn)
         if (P.IsA('PlayerPawn'))
-            PlayerPawn(P).ClientMessage(Msg, 'Say', true);
+            PlayerPawn(P).ClientMessage(Msg, 'Archipelago', true);
 }
 
 function HandleUnlock(string MapShortName)
