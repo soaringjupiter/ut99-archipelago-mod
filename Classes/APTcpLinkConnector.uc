@@ -1,4 +1,4 @@
-class APHttpLinkConnector extends IpDrv.TcpLink
+class APTcpLinkConnector extends IpDrv.TcpLink
     config(APLadder);
 
 var config string BridgeHost;
@@ -10,15 +10,15 @@ var string PendingSendQueue[16]; // Simple queue for messages if not connected
 var int PendingSendCount;
 
 // Persistent connector singleton per level
-static function APHttpLinkConnector Launch(Actor Owner)
+static function APTcpLinkConnector Launch(Actor Owner)
 {
-    local APHttpLinkConnector H;
+    local APTcpLinkConnector H;
     // Try to find an existing connector
-    foreach Owner.AllActors(class'APHttpLinkConnector', H)
+    foreach Owner.AllActors(class'APTcpLinkConnector', H)
         if (H != None && H.bIsConnected)
             return H;
     // Otherwise, spawn a new one
-    H = Owner.Spawn(class'APHttpLinkConnector');
+    H = Owner.Spawn(class'APTcpLinkConnector');
     if (H != None)
         H.Connect();
     return H;
@@ -195,7 +195,7 @@ function FlushPendingSends()
 
 static function SendBeat(Actor Owner, string MapName)
 {
-    local APHttpLinkConnector Bridge;
+    local APTcpLinkConnector Bridge;
     Bridge = Launch(Owner);
     if (Bridge != None)
         Bridge.SendJSON("{\"action\": \"beat\", \"map\": \"" $ MapName $ "\"}");

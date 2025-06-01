@@ -11,7 +11,7 @@ var const string CTFNames[11];
 var const string ASNames[6];
 var const string ChalNames[4];
 
-var transient APHttpLinkConnector Bridge;
+var transient APTcpLinkConnector Bridge;
 var const     int BridgePort;
 
 var config int LastMatch;
@@ -61,11 +61,11 @@ function NotifyBeat( class<Ladder> L, int MapIdx )
 {
     switch ( GetLadderIndex(L) )
     {
-        case 0: class'APHttpLinkConnector'.static.SendBeat( Self, DMNames [MapIdx - 1] ); Log("Beat DM " $ DMNames [MapIdx - 1]); break;
-        case 1: class'APHttpLinkConnector'.static.SendBeat( Self, DOMNames[MapIdx - 1] ); Log("Beat DOM " $ DOMNames[MapIdx - 1]); break;
-        case 2: class'APHttpLinkConnector'.static.SendBeat( Self, CTFNames[MapIdx - 1] ); Log("Beat CTF " $ CTFNames[MapIdx - 1]); break;
-        case 3: class'APHttpLinkConnector'.static.SendBeat( Self, ASNames [MapIdx - 1] ); Log("Beat AS " $ ASNames [MapIdx - 1]); break;
-        default: class'APHttpLinkConnector'.static.SendBeat( Self, ChalNames[MapIdx] ); Log("Beat Chal " $ ChalNames[MapIdx]); break;
+        case 0: class'APTcpLinkConnector'.static.SendBeat( Self, DMNames [MapIdx - 1] ); Log("Beat DM " $ DMNames [MapIdx - 1]); break;
+        case 1: class'APTcpLinkConnector'.static.SendBeat( Self, DOMNames[MapIdx - 1] ); Log("Beat DOM " $ DOMNames[MapIdx - 1]); break;
+        case 2: class'APTcpLinkConnector'.static.SendBeat( Self, CTFNames[MapIdx - 1] ); Log("Beat CTF " $ CTFNames[MapIdx - 1]); break;
+        case 3: class'APTcpLinkConnector'.static.SendBeat( Self, ASNames [MapIdx - 1] ); Log("Beat AS " $ ASNames [MapIdx - 1]); break;
+        default: class'APTcpLinkConnector'.static.SendBeat( Self, ChalNames[MapIdx] ); Log("Beat Chal " $ ChalNames[MapIdx]); break;
     }
     
 }
@@ -180,7 +180,7 @@ function PostBeginPlay()
     Super.PostBeginPlay();
 
     if ( Bridge == None )
-        Bridge = class'APHttpLinkConnector'.static.Launch( Self );
+        Bridge = class'APTcpLinkConnector'.static.Launch( Self );
 
 	for (i = 0; i < 5; i++)
 	{
