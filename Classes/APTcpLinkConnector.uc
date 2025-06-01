@@ -8,6 +8,7 @@ var config float  ConnectTimeout;
 var bool bIsConnected;
 var string PendingSendQueue[16]; // Simple queue for messages if not connected
 var int PendingSendCount;
+var string CheckedLocationsBuffer;
 
 // Persistent connector singleton per level
 static function APTcpLinkConnector Launch(Actor Owner)
@@ -45,6 +46,8 @@ event Opened()
     FlushPendingSends();
     // Request all current unlocks
     SendJSON("{\"action\": \"poll\"}");
+    // Request all checked locations
+    RequestCheckedLocations();
 }
 
 event Closed()
@@ -87,8 +90,11 @@ event ReceivedText(string Text)
 
 function HandleJSONLine(string Line)
 {
-    // Very basic JSON parsing for known message types
-    if (InStr(Line, "\"action\": \"unlock\"") != -1)
+    if (InStr(Line, "\"action\": \"checked_locations\"") != -1)
+    {
+        UpdateCompletedFromCheckedLocations(ParseJSONValue(Line, "maps"));
+    }
+    else if (InStr(Line, "\"action\": \"unlock\"") != -1)
     {
         HandleUnlock(ParseJSONValue(Line, "map"));
     }
@@ -191,6 +197,43 @@ function FlushPendingSends()
     for (i = 0; i < PendingSendCount; ++i)
         SendText(PendingSendQueue[i] $ NewLine);
     PendingSendCount = 0;
+}
+
+function RequestCheckedLocations()
+{
+    SendJSON("{\"action\": \"checked_locations\"}");
+}
+
+function UpdateCompletedFromCheckedLocations(string MapsArray)
+{
+    // MapsArray is a JSON array of map names, e.g. ["DM-Stalwart","DOM-Ghardhen"]
+    local string MapName;
+    local int i, start, end, length;
+    local APMapInventory Inv;
+    Inv = None;
+    if (Level.PawnList != None)
+        Inv = APMapInventory(Level.PawnList.Inventory);
+    if (Inv == None)
+        return;
+    // Clear completed mask
+    Inv.ClearCompleted();
+    length = Len(MapsArray);
+    i = 0;
+    while (i < length)
+    {
+        // Find next quoted string
+        start = InStr(Mid(MapsArray, i), Chr(34));
+        if (start == -1)
+            break;
+        start = i + start + 1;
+        end = InStr(Mid(MapsArray, start), Chr(34));
+        if (end == -1)
+            break;
+        MapName = Left(Mid(MapsArray, start), end);
+        Inv.MarkCompletedByShortName(MapName);
+        i = start + end + 1;
+    }
+    Log("AP bridge: Updated completed maps from checked_locations");
 }
 
 static function SendBeat(Actor Owner, string MapName)

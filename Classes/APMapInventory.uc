@@ -215,6 +215,33 @@ function Destroyed()
 	Super.Destroyed();
 }
 
+function ClearCompleted()
+{
+    local int i;
+    for (i = 0; i < 5; ++i)
+    {
+        CompletedMask[i] = 0;
+        SavedCompleted[i] = 0;
+    }
+    SaveConfig();
+}
+
+function MarkCompletedByShortName(string Short)
+{
+    local int LadderIdx, MapIdx;
+    if (ParseShortName(Short, LadderIdx, MapIdx))
+    {
+        switch (LadderIdx)
+        {
+            case 0: MarkCompleted(class'APLadderDM', MapIdx); break;
+            case 1: MarkCompleted(class'APLadderDOM', MapIdx); break;
+            case 2: MarkCompleted(class'APLadderCTF', MapIdx); break;
+            case 3: MarkCompleted(class'APLadderAS', MapIdx); break;
+            case 4: MarkCompleted(class'APLadderChal', MapIdx); break;
+        }
+    }
+}
+
 defaultproperties
 {
     bHidden=True
