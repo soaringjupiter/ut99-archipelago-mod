@@ -23,7 +23,6 @@ event playerpawn Login
 function AcceptInventory(pawn PlayerPawn)
 {
 	local inventory Inv, Next;
-	local LadderInventory LadderObj;
 
 	for( Inv=PlayerPawn.Inventory; Inv!=None; Inv=Next )
 	{

@@ -55,8 +55,6 @@ var localized string RankString[4];
 var localized string MatchesString;
 
 function Created() {
-	local float Xs, Ys;
-	local int i;
 	local int W, H;
 	local float XWidth, YHeight, XMod, YMod, XPos, YPos;
 	local color TextColor;
@@ -374,10 +372,6 @@ function Created() {
 
 function BeforePaint (Canvas C, float X, float Y)
 {
-	local LadderInventory LadderObj;
-	local float Xs;
-	local float Ys;
-	local int i;
 	local int W;
 	local int H;
 	local float XWidth;

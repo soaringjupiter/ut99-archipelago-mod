@@ -65,7 +65,7 @@ event ReceivedText(string Text)
     local int i, j, length;
     local string Line, NewLine;
 
-    NewLine = Chr(13) $ Chr(10);
+    NewLine = Chr(10);
     length = Len(Text);
     i = 0;
     while (i < length)

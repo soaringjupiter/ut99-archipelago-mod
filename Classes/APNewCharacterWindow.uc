@@ -2,7 +2,6 @@ class APNewCharacterWindow extends NewCharacterWindow;
 
 function NextPressed () 
 	{
-	local int i;
 	local APManagerWindow ManagerWindow;
 
 	if (LadderObj.Sex ~= "F") {
