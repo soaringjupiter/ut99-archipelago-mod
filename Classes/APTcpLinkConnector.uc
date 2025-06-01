@@ -1,5 +1,5 @@
 class APTcpLinkConnector extends IpDrv.TcpLink
-    config(APLadder);
+    config(Archipelago);
 
 var config string BridgeHost;
 var config int    BridgePort;

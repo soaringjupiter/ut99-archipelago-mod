@@ -4,14 +4,8 @@ var int LastMatch;
 
 function Created() {
 	Super.Created();
-
-	if (LadderObj.DOMPosition == -1) {
-		LadderObj.DOMPosition = 1;
-		SelectedMatch = 0;
-	} else {
-		SelectedMatch = LadderObj.DOMPosition;
-	}
-	SetupLadder(LadderObj.DOMPosition, LadderObj.DOMRank);
+	SelectedMatch = GetDefaultSelection();
+	SetupLadder(SelectedMatch, LadderObj.DOMRank);
 }
 
 function FillInfoArea(int i) {

@@ -1,4 +1,4 @@
-class APMapInventory extends Inventory config(APLadder);
+class APMapInventory extends Inventory config(Archipelago);
 
 var travel int UnlockedMask[5];
 var travel int CompletedMask[5];
@@ -20,10 +20,10 @@ function string NameFor( int LadderIdx, int MapIdx )
 {
     switch ( LadderIdx )
     {
-        case 0: return "DM-"  $ DMNames [MapIdx - 1];
-        case 1: return "DOM-" $ DOMNames[MapIdx - 1];
-        case 2: return "CTF-" $ CTFNames[MapIdx - 1];
-        case 3: return "AS-"  $ ASNames [MapIdx - 1];
+        case 0: return "DM-"  $ DMNames [MapIdx];
+        case 1: return "DOM-" $ DOMNames[MapIdx];
+        case 2: return "CTF-" $ CTFNames[MapIdx];
+        case 3: return "AS-"  $ ASNames [MapIdx];
         default: return "DM-" $ ChalNames[MapIdx];
     }
 }
@@ -61,10 +61,10 @@ function NotifyBeat( class<Ladder> L, int MapIdx )
 {
     switch ( GetLadderIndex(L) )
     {
-        case 0: class'APTcpLinkConnector'.static.SendBeat( Self, DMNames [MapIdx - 1] ); Log("Beat DM " $ DMNames [MapIdx - 1]); break;
-        case 1: class'APTcpLinkConnector'.static.SendBeat( Self, DOMNames[MapIdx - 1] ); Log("Beat DOM " $ DOMNames[MapIdx - 1]); break;
-        case 2: class'APTcpLinkConnector'.static.SendBeat( Self, CTFNames[MapIdx - 1] ); Log("Beat CTF " $ CTFNames[MapIdx - 1]); break;
-        case 3: class'APTcpLinkConnector'.static.SendBeat( Self, ASNames [MapIdx - 1] ); Log("Beat AS " $ ASNames [MapIdx - 1]); break;
+        case 0: class'APTcpLinkConnector'.static.SendBeat( Self, DMNames [MapIdx] ); Log("Beat DM " $ DMNames [MapIdx]); break;
+        case 1: class'APTcpLinkConnector'.static.SendBeat( Self, DOMNames[MapIdx] ); Log("Beat DOM " $ DOMNames[MapIdx]); break;
+        case 2: class'APTcpLinkConnector'.static.SendBeat( Self, CTFNames[MapIdx] ); Log("Beat CTF " $ CTFNames[MapIdx]); break;
+        case 3: class'APTcpLinkConnector'.static.SendBeat( Self, ASNames [MapIdx] ); Log("Beat AS " $ ASNames [MapIdx]); break;
         default: class'APTcpLinkConnector'.static.SendBeat( Self, ChalNames[MapIdx] ); Log("Beat Chal " $ ChalNames[MapIdx]); break;
     }
     
@@ -82,28 +82,28 @@ function bool ParseShortName( string Short, out int Ladder, out int Map )
                 for ( MapI=0 ; MapI<15 ; ++MapI )
                     if ( DMNames[MapI] == Short )
                     {
-                        Ladder = LadderI; Map = MapI + 1; return True;
+                        Ladder = LadderI; Map = MapI; return True;
                     }
                 break;
             case 1:
                 for ( MapI=0 ; MapI<9 ; ++MapI )
                     if ( DOMNames[MapI] == Short )
                     {
-                        Ladder = LadderI; Map = MapI + 1; return True;
+                        Ladder = LadderI; Map = MapI; return True;
                     }
                 break;
             case 2:
                 for ( MapI=0 ; MapI<11 ; ++MapI )
                     if ( CTFNames[MapI] == Short )
                     {
-                        Ladder = LadderI; Map = MapI + 1; return True;
+                        Ladder = LadderI; Map = MapI; return True;
                     }
                 break;
             case 3:
                 for ( MapI=0 ; MapI<6 ; ++MapI )
                     if ( ASNames[MapI] == Short )
                     {
-                        Ladder = LadderI; Map = MapI + 1; return True;
+                        Ladder = LadderI; Map = MapI; return True;
                     }
                 break;
             case 4:

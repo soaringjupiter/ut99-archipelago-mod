@@ -1,4 +1,4 @@
-class APSlotWindow extends SlotWindow config(APLadder);
+class APSlotWindow extends SlotWindow config(Archipelago);
 
 function KillGame(int i) {
 	local KillGameQueryWindow KGQWindow;

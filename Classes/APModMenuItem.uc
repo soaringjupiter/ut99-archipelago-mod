@@ -1,5 +1,5 @@
 class APModMenuItem extends UMenuModMenuItem  // or UMenuModMenuItem, depending on your UT99 build
-    config(APLadder);  // optional, if you have a custom config section
+    config(Archipelago);  // optional, if you have a custom config section
 
 // Called when the user clicks our menu entry
 function Execute()

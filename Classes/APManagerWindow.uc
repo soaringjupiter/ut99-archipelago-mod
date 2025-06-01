@@ -1,4 +1,4 @@
-class APManagerWindow extends ManagerWindow Config(APLadder);
+class APManagerWindow extends ManagerWindow config(Archipelago);
 
 // Background
 var texture BG1[4];

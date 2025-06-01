@@ -4,14 +4,8 @@ var int LastMatch;
 
 function Created() {
 	Super.Created();
-
-	if (LadderObj.CTFPosition == -1) {
-		LadderObj.CTFPosition = 1;
-		SelectedMatch = 0;
-	} else {
-		SelectedMatch = LadderObj.CTFPosition;
-	}
-	SetupLadder(LadderObj.CTFPosition, LadderObj.CTFRank);
+	SelectedMatch = GetDefaultSelection();
+	SetupLadder(SelectedMatch, LadderObj.CTFRank);
 }
 
 function FillInfoArea(int i) {

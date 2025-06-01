@@ -1,4 +1,4 @@
-class APLadder extends UTLadder config(APLadder);
+class APLadder extends UTLadder config(Archipelago);
 
 var APMapInventory MapInventoryObj;
 
@@ -251,4 +251,20 @@ function ShowWindow()
 {
 	LadderObj.CurrentLadder = Ladder;
 	Super.ShowWindow();
+}
+
+function int GetDefaultSelection()
+{
+    local int i, matches;
+    matches = LadderObj.CurrentLadder.Default.Matches;
+    // 1. First unlocked and not completed
+    for (i = 0; i < matches; ++i)
+        if (MapInventoryObj.IsUnlocked(LadderObj.CurrentLadder, i) && !MapInventoryObj.IsCompleted(LadderObj.CurrentLadder, i))
+            return i;
+    // 2. First unlocked
+    for (i = 0; i < matches; ++i)
+        if (MapInventoryObj.IsUnlocked(LadderObj.CurrentLadder, i))
+            return i;
+    // 3. Fallback
+    return 0;
 }

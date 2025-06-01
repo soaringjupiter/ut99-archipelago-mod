@@ -5,14 +5,8 @@ var int LastMatch;
 function Created()
 {
 	Super.Created();
-
-	if (LadderObj.ASPosition == -1) {
-		LadderObj.ASPosition = 1;
-		SelectedMatch = 0;
-	} else {
-		SelectedMatch = LadderObj.ASPosition;
-	}
-	SetupLadder(LadderObj.ASPosition, LadderObj.ASRank);
+	SelectedMatch = GetDefaultSelection();
+	SetupLadder(SelectedMatch, LadderObj.ASRank);
 }
 
 function FillInfoArea(int i)

@@ -2,15 +2,8 @@ class APLadderDMMenu extends APLadder;
 
 function Created() {
 	Super.Created();
-
-	if (LadderObj.DMPosition == -1) {
-		LadderObj.DMPosition = 1;
-		SelectedMatch = 0;
-	} else {
-		SelectedMatch = LadderObj.DMPosition;
-	}
-
-	SetupLadder(LadderObj.DMPosition, LadderObj.DMRank);
+	SelectedMatch = GetDefaultSelection();
+	SetupLadder(SelectedMatch, LadderObj.DMRank);
 }
 
 function FillInfoArea(int i) {

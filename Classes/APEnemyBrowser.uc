@@ -1,1 +1,1 @@
-class APEnemyBrowser extends EnemyBrowser Config(APLadder);
+class APEnemyBrowser extends EnemyBrowser config(Archipelago);

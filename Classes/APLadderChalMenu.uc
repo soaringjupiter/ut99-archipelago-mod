@@ -5,8 +5,8 @@ var int LastMatch;
 function Created() {
 	Super.Created();
 
-	SelectedMatch = LadderObj.ChalPosition;
-	SetupLadder(LadderObj.ChalPosition, LadderObj.ChalRank);
+	SelectedMatch = GetDefaultSelection();
+	SetupLadder(SelectedMatch, LadderObj.ChalRank);
 }
 
 function FillInfoArea(int i) {
